@@ -172,6 +172,10 @@ class AudioEndpoint(object):
 		"""Gets a string that identifies the device."""
 		return self.endpoint.GetId()
 
+	def getState(self):
+		"""Gets the current state of the device."""
+		return self.endpoint.GetState()
+
 	def isDefault(self, role=eConsole, dataFlow=eRender):
 		"""Return if endpoint device is default or not."""
 		return self == self.endpoints.GetDefault(role, dataFlow)
