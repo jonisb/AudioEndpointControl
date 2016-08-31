@@ -169,7 +169,7 @@ class AudioEndpoint(object):
 		return _GetValue(pStore.GetValue(self.PKEY_Device))
 
 	def getId(self):
-		"""Return an endpoint devices Id."""
+		"""Gets a string that identifies the device."""
 		return self.endpoint.GetId()
 
 	def isDefault(self, role=eConsole, dataFlow=eRender):
