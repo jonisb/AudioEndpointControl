@@ -98,6 +98,27 @@ class AudioVolume(object):
 		"""Queries the audio endpoint device for its hardware-supported functions."""
 		return self.IAudioEndpointVolume.QueryHardwareSupport()
 
+	def RegisterControlChangeNotify(self, Callback):
+		"""Registers a client's notification callback interface."""
+		self.Callback = Callback
+		hr = self.IAudioEndpointVolume.RegisterControlChangeNotify(self.Callback)
+		if hr:
+			import win32api
+			print('RegisterControlChangeNotify', hr)
+			print('SetDefaultEndpoint', win32api.FormatMessage(hr))
+
+	def UnregisterControlChangeNotify(self):
+		"""Deletes the registration of a client's notification callback interface."""
+		try:
+			hr = self.IAudioEndpointVolume.UnregisterControlChangeNotify(self.Callback)
+			self.Callback = None
+			if hr:
+				import win32api
+				print('UnregisterControlChangeNotify', hr)
+				print('SetDefaultEndpoint', win32api.FormatMessage(hr))
+		except AttributeError:
+			pass
+
 	def __add__(self, other=1):
 		for _ in range(other):
 			self.StepUp()
@@ -135,11 +156,6 @@ class AudioVolume(object):
 
 	#def __call__(self, test):
 	#	return 'Testing {0}'.format(test)
-#UnregisterControlChangeNotify
-#Deletes the registration of a client's notification callback interface.
-
-#RegisterControlChangeNotify
-#Registers a client's notification callback interface.
 
 # This is a wrapper for a single COM endpoint.
 class AudioEndpoint(object):
