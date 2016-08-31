@@ -330,20 +330,29 @@ class AudioEndpoints(object):
 		return int(self.pDevEnum.EnumAudioEndpoints(eRender, self.DEVICE_STATE).GetCount())
 
 if __name__ == '__main__':
+	AudioDevices = AudioEndpoints()
+
+	endpoint = AudioDevices.GetDefault()
+
+	Vol = endpoint.volume.Get()
+	endpoint.volume.Set(0)
+	assert endpoint.volume.Get() == 0.0, 'endpoint.volume.Get() wrong'
+	endpoint.volume.Set(Vol)
+	assert endpoint.volume.Get() == Vol, 'endpoint.volume.Get() wrong'
+
 	#try:
 	#	from EndpointExample import CMMNotificationClient
 	#except:
 	#	pass
 	#else:
-	AudioDevices = AudioEndpoints()
 
-	endpoint = AudioDevices.GetDefault()
+	#
 	#pVolume = _POINTER(IAudioEndpointVolume)(volume)
 
-	print(endpoint.volume)
-	endpoint.volume = .8
-	print(endpoint.volume.test)
-	print(endpoint.volume('Oh my'))
+	#print(endpoint.volume)
+	#endpoint.volume = .8
+	#print(endpoint.volume.test)
+	#print(endpoint.volume('Oh my'))
 	#for endpoint in AudioDevices:
 		#pVolume = _POINTER(IAudioEndpointVolume)(endpoint.endpoint.Activate(IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None))
 		#print(pVolume)
