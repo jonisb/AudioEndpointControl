@@ -1,4 +1,4 @@
-from __future__ import print_function, unicode_literals
+from __future__ import print_function, unicode_literals, absolute_import
 __version__ =  '0.1a1'
 if __name__ == '__main__':
 	import os
@@ -16,9 +16,9 @@ except ImportError:
 	GetModule("mmdeviceapi.tlb")
 	from comtypes.gen.MMDeviceAPILib import MMDeviceEnumerator as _MMDeviceEnumerator, IMMDeviceEnumerator as _IMMDeviceEnumerator, IMMNotificationClient
 #from comtypes.client import ShowEvents, GetEvents
-from MMConstants import *
-from EndpointvolumeAPI import *
-from PolicyConfigAPI import *
+from .MMConstants import *
+from .EndpointvolumeAPI import *
+from .PolicyConfigAPI import *
 
 _CLSID_MMDeviceEnumerator = _MMDeviceEnumerator._reg_clsid_
 

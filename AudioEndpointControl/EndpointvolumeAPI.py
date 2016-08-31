@@ -1,3 +1,4 @@
+from __future__ import print_function, unicode_literals, absolute_import
 #from ctypes import POINTER
 #from ctypes.wintypes import DWORD, BOOL
 #from comtypes import *
@@ -23,7 +24,7 @@ from comtypes import (
 	COMMETHOD as _COMMETHOD,
 	STDMETHOD as _STDMETHOD,
 )
-from MMConstants import *
+from .MMConstants import *
 
 IID_IAudioEndpointVolume = _GUID('{5CDF2C82-841E-4546-9722-0CF74078229A}')
 
