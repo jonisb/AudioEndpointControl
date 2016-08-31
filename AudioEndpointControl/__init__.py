@@ -106,10 +106,6 @@ class AudioVolume(object):
 		for _ in range(other):
 			self.StepDown()
 
-	__pos__ = __add__
-
-	__neg__ = __add__
-
 	def __int__(self):
 		return self[0]
 
@@ -134,6 +130,9 @@ class AudioVolume(object):
 
 	__getitem__ = Get
 	__setitem__ = _partial(Set, Scalar=True, pguidEventContext=None)
+	__pos__ = __add__
+	__neg__ = __add__
+
 	#def __call__(self, test):
 	#	return 'Testing {0}'.format(test)
 #UnregisterControlChangeNotify
@@ -264,7 +263,7 @@ Registers a client's notification callback interface.
 """
 class AudioEndpoints(object):
 	def __init__(self, DEVICE_STATE=DEVICE_STATE_ACTIVE, PKEY_Device=PKEY_Device_FriendlyName):
-		self.DEVICE_STATE=DEVICE_STATE
+		self.DEVICE_STATE = DEVICE_STATE
 		self.PKEY_Device = PKEY_Device
 		self.pDevEnum = CoCreateInstance(_CLSID_MMDeviceEnumerator, _IMMDeviceEnumerator, CLSCTX_INPROC_SERVER)
 		self.pPolicyConfig = None
@@ -273,10 +272,11 @@ class AudioEndpoints(object):
 		return AudioEndpoint(self.pDevEnum.GetDefaultAudioEndpoint(dataFlow, role), self, self.PKEY_Device)
 
 	def SetDefault(self, endpoint, role=eConsole):
+		OldDefault = self.GetDefault(role)
+
 		if not self.pPolicyConfig:
 			self.pPolicyConfig = CoCreateInstance(CLSID_CPolicyConfigVistaClient, IPolicyConfigVista, CLSCTX_ALL)
 
-		OldDefault = self.GetDefault(role)
 		hr = self.pPolicyConfig.SetDefaultEndpoint(endpoint.getId(), role)
 		if hr:
 			import win32api
