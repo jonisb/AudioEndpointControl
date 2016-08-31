@@ -317,6 +317,10 @@ class AudioEndpoints(object):
 	def __str__(self):
 		return str([str(endpoint) for endpoint in self])
 
+	def ChangeFilter(self, DEVICE_STATE=None, PKEY_Device=None):
+		if DEVICE_STATE != None: self.DEVICE_STATE = DEVICE_STATE
+		if PKEY_Device != None: self.PKEY_Device = PKEY_Device
+
 	def __iter__(self, dataFlow=eRender):
 		pEndpoints = self.pDevEnum.EnumAudioEndpoints(dataFlow, self.DEVICE_STATE)
 		for i in range(pEndpoints.GetCount()):
