@@ -1,5 +1,5 @@
 from __future__ import print_function, unicode_literals, absolute_import
-__version__ =  '0.1a1'
+__version__ =  '0.1a2'
 if __name__ == '__main__':
 	import os
 	from sys import argv
