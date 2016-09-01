@@ -1,7 +1,7 @@
 from __future__ import print_function, unicode_literals
 import AudioEndpointControl
 # COMObject, IMMNotificationClient are used for notifications
-from AudioEndpointControl import COMObject, IMMNotificationClient
+from AudioEndpointControl import COMObject, IMMNotificationClient, IAudioEndpointVolumeCallback
 # EDataFlow enumeration: The EDataFlow enumeration defines constants that indicate the direction in which audio data flows between an audio endpoint device and an application.
 from AudioEndpointControl import EDataFlow, eRender, eCapture, eAll, EDataFlow_enum_count
 # ERole enumeration: The ERole enumeration defines constants that indicate the role that the system has assigned to an audio endpoint device.
@@ -31,6 +31,28 @@ class CMMNotificationClient(COMObject):
 	def OnPropertyValueChanged(self, this, pwstrDeviceId, key):
 			print('OnPropertyValueChanged: {0}, {1}'.format(AudioDevices(pwstrDeviceId), key))
 
+class CAudioEndpointVolumeCallback(COMObject):
+	_com_interfaces_=[IAudioEndpointVolumeCallback]
+
+	def OnNotify(self, this, pNotify):
+		try:
+			print('OnNotify: guidEventContext {0}'.format(pNotify.contents.guidEventContext))
+		except: pass
+		try:
+			print('OnNotify: bMuted {0}'.format(pNotify.contents.bMuted))
+		except: pass
+		try:
+			print('OnNotify: fMasterVolume {0}'.format(pNotify.contents.fMasterVolume))
+		except: pass
+		try:
+			print('OnNotify: nChannels {0}'.format(pNotify.contents.nChannels))
+		except: pass
+		from ctypes import POINTER, c_float, cast
+		try:
+			for channel in range(pNotify.contents.nChannels):
+				print('OnNotify: afChannelVolumes {0}'.format(cast(pNotify.contents.afChannelVolumes, POINTER(c_float))[channel]))
+		except: pass
+
 if __name__ == '__main__':
 	print("When creating the AudioEndpoints object you can specify what endpoint(s) you want shown (ACTIVE, DISABLED, NOTPRESENT, UNPLUGGED, ALL).\n")
 	AudioDevices = AudioEndpointControl.AudioEndpoints(DEVICE_STATE=DEVICE_STATE_ACTIVE, PKEY_Device=PKEY_Device_FriendlyName)
@@ -57,7 +79,7 @@ if __name__ == '__main__':
 
 	import time
 	try:
-		print("\nLets activate some AudioEndpoint notifications, you need to create a class with methods that respond to the events.")
+		print("\nLets activate some AudioEndpoint device notifications, you need to create a class with methods that respond to the events.")
 		print("You can change the default audio device or enable/disable some devices to see more events.\nTo exit press CTRL+C.\n")
 		AudioDevices.RegisterCallback(CMMNotificationClient())
 		#OldDefault = AudioDevices.SetDefault(AudioDevices('{0.0.0.00000000}.{1797e540-0196-47fd-9a36-9e34916bfc5f}'))
@@ -69,4 +91,17 @@ if __name__ == '__main__':
 		time.sleep(1)
 		print("Remember to unregister when you don't want notifications anymore.")
 		AudioDevices.UnregisterCallback()
+		print()
+
+	try:
+		print("\nLets activate some AudioEndpoint volume notifications, you need to create a class with methods that respond to the events.")
+		print("You can change the volume or mute/unmute of any channel on the default audio device.\nTo exit press CTRL+C.\n")
+		endpoint = AudioDevices.GetDefault()
+		endpoint.volume.RegisterControlChangeNotify(CAudioEndpointVolumeCallback())
+		time.sleep(60)
+	except KeyboardInterrupt:
+		pass
+	finally:
+		print("Remember to unregister when you don't want notifications anymore.")
+		endpoint.volume.UnregisterControlChangeNotify()
 		print('and done.')
