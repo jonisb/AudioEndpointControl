@@ -47,8 +47,7 @@ AUDIO_VOLUME_NOTIFICATION_DATA._fields_ = [
     ('bMuted', _BOOL),
     ('fMasterVolume', _c_float),
     ('nChannels', _UINT),
-    ('afChannelVolumes', (_c_float * 4)),
-    #('afChannelVolumes', _POINTER(_c_float)),
+    ('afChannelVolumes', (_c_float * 1)),
 ]
 PAUDIO_VOLUME_NOTIFICATION_DATA = _POINTER(AUDIO_VOLUME_NOTIFICATION_DATA)
 

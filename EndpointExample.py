@@ -35,27 +35,22 @@ class CAudioEndpointVolumeCallback(COMObject):
 	_com_interfaces_=[IAudioEndpointVolumeCallback]
 
 	def OnNotify(self, this, pNotify):
-		#try:
-		#	print('OnNotify: guidEventContext {0}'.format(pNotify.contents.guidEventContext))
-		#except: pass
-		#try:
-		#	print('OnNotify: bMuted {0}'.format(pNotify.contents.bMuted))
-		#except: pass
-		#try:
-		#	print('OnNotify: fMasterVolume {0}'.format(pNotify.contents.fMasterVolume))
-		#except: pass
+		try:
+			print('OnNotify: guidEventContext {0}'.format(pNotify.contents.guidEventContext))
+		except: pass
+		try:
+			print('OnNotify: bMuted {0}'.format(pNotify.contents.bMuted))
+		except: pass
+		try:
+			print('OnNotify: fMasterVolume {0}'.format(pNotify.contents.fMasterVolume))
+		except: pass
 		try:
 			print('OnNotify: nChannels {0}'.format(pNotify.contents.nChannels))
 		except: pass
-		from ctypes import POINTER, c_float, byref, pointer
+		from ctypes import POINTER, c_float, cast
 		try:
-			print('OnNotify: afChannelVolumes {0}'.format(pNotify.contents.afChannelVolumes))
-			print('OnNotify: afChannelVolumes {0}'.format(pNotify.contents.afChannelVolumes[0]))
-			print('OnNotify: afChannelVolumes {0}'.format(pNotify.contents.afChannelVolumes[1]))
-			print('OnNotify: afChannelVolumes {0}'.format(pNotify.contents.afChannelVolumes[2]))
-			print('OnNotify: afChannelVolumes {0}'.format(pNotify.contents.afChannelVolumes[3]))
-			#print('OnNotify: afChannelVolumes {0}'.format(pointer(pNotify.contents.afChannelVolumes[0])))
-			#print('OnNotify: afChannelVolumes {0}'.format(POINTER(pNotify.contents.afChannelVolumes)[1]))
+			for channel in range(pNotify.contents.nChannels):
+				print('OnNotify: afChannelVolumes {0}'.format(cast(pNotify.contents.afChannelVolumes, POINTER(c_float))[channel]))
 		except: pass
 
 if __name__ == '__main__':
