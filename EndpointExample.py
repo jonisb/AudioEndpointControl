@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
 	import time
 	try:
-		print("\nLets activate some AudioEndpoint notifications, you need to create a class with methods that respond to the events.")
+		print("\nLets activate some AudioEndpoint device notifications, you need to create a class with methods that respond to the events.")
 		print("You can change the default audio device or enable/disable some devices to see more events.\nTo exit press CTRL+C.\n")
 		AudioDevices.RegisterCallback(CMMNotificationClient())
 		#OldDefault = AudioDevices.SetDefault(AudioDevices('{0.0.0.00000000}.{1797e540-0196-47fd-9a36-9e34916bfc5f}'))
@@ -91,11 +91,11 @@ if __name__ == '__main__':
 		time.sleep(1)
 		print("Remember to unregister when you don't want notifications anymore.")
 		AudioDevices.UnregisterCallback()
-		print('and done.')
+		print()
 
 	try:
-		print("\nLets activate some AudioEndpoint notifications, you need to create a class with methods that respond to the events.")
-		print("You can change the default audio device or enable/disable some devices to see more events.\nTo exit press CTRL+C.\n")
+		print("\nLets activate some AudioEndpoint volume notifications, you need to create a class with methods that respond to the events.")
+		print("You can change the volume or mute/unmute of any channel on the default audio device.\nTo exit press CTRL+C.\n")
 		endpoint = AudioDevices.GetDefault()
 		endpoint.volume.RegisterControlChangeNotify(CAudioEndpointVolumeCallback())
 		time.sleep(60)
