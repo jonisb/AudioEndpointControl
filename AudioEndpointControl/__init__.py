@@ -1,4 +1,4 @@
-from __future__ import print_function, unicode_literals
+from __future__ import print_function, unicode_literals, absolute_import
 __version__ =  '0.1a1'
 if __name__ == '__main__':
 	import os
@@ -16,9 +16,9 @@ except ImportError:
 	GetModule("mmdeviceapi.tlb")
 	from comtypes.gen.MMDeviceAPILib import MMDeviceEnumerator as _MMDeviceEnumerator, IMMDeviceEnumerator as _IMMDeviceEnumerator, IMMNotificationClient
 #from comtypes.client import ShowEvents, GetEvents
-from MMConstants import *
-from EndpointvolumeAPI import *
-from PolicyConfigAPI import *
+from .MMConstants import *
+from .EndpointvolumeAPI import *
+from .PolicyConfigAPI import *
 
 _CLSID_MMDeviceEnumerator = _MMDeviceEnumerator._reg_clsid_
 
@@ -98,6 +98,27 @@ class AudioVolume(object):
 		"""Queries the audio endpoint device for its hardware-supported functions."""
 		return self.IAudioEndpointVolume.QueryHardwareSupport()
 
+	def RegisterControlChangeNotify(self, Callback):
+		"""Registers a client's notification callback interface."""
+		self.Callback = Callback
+		hr = self.IAudioEndpointVolume.RegisterControlChangeNotify(self.Callback)
+		if hr:
+			import win32api
+			print('RegisterControlChangeNotify', hr)
+			print('SetDefaultEndpoint', win32api.FormatMessage(hr))
+
+	def UnregisterControlChangeNotify(self):
+		"""Deletes the registration of a client's notification callback interface."""
+		try:
+			hr = self.IAudioEndpointVolume.UnregisterControlChangeNotify(self.Callback)
+			self.Callback = None
+			if hr:
+				import win32api
+				print('UnregisterControlChangeNotify', hr)
+				print('SetDefaultEndpoint', win32api.FormatMessage(hr))
+		except AttributeError:
+			pass
+
 	def __add__(self, other=1):
 		for _ in range(other):
 			self.StepUp()
@@ -105,10 +126,6 @@ class AudioVolume(object):
 	def __sub__(self, other=1):
 		for _ in range(other):
 			self.StepDown()
-
-	__pos__ = __add__
-
-	__neg__ = __add__
 
 	def __int__(self):
 		return self[0]
@@ -134,13 +151,11 @@ class AudioVolume(object):
 
 	__getitem__ = Get
 	__setitem__ = _partial(Set, Scalar=True, pguidEventContext=None)
+	__pos__ = __add__
+	__neg__ = __add__
+
 	#def __call__(self, test):
 	#	return 'Testing {0}'.format(test)
-#UnregisterControlChangeNotify
-#Deletes the registration of a client's notification callback interface.
-
-#RegisterControlChangeNotify
-#Registers a client's notification callback interface.
 
 # This is a wrapper for a single COM endpoint.
 class AudioEndpoint(object):
@@ -170,8 +185,12 @@ class AudioEndpoint(object):
 		return _GetValue(pStore.GetValue(self.PKEY_Device))
 
 	def getId(self):
-		"""Return an endpoint devices Id."""
+		"""Gets a string that identifies the device."""
 		return self.endpoint.GetId()
+
+	def getState(self):
+		"""Gets the current state of the device."""
+		return self.endpoint.GetState()
 
 	def isDefault(self, role=eConsole, dataFlow=eRender):
 		"""Return if endpoint device is default or not."""
@@ -264,7 +283,7 @@ Registers a client's notification callback interface.
 """
 class AudioEndpoints(object):
 	def __init__(self, DEVICE_STATE=DEVICE_STATE_ACTIVE, PKEY_Device=PKEY_Device_FriendlyName):
-		self.DEVICE_STATE=DEVICE_STATE
+		self.DEVICE_STATE = DEVICE_STATE
 		self.PKEY_Device = PKEY_Device
 		self.pDevEnum = CoCreateInstance(_CLSID_MMDeviceEnumerator, _IMMDeviceEnumerator, CLSCTX_INPROC_SERVER)
 		self.pPolicyConfig = None
@@ -273,10 +292,11 @@ class AudioEndpoints(object):
 		return AudioEndpoint(self.pDevEnum.GetDefaultAudioEndpoint(dataFlow, role), self, self.PKEY_Device)
 
 	def SetDefault(self, endpoint, role=eConsole):
+		OldDefault = self.GetDefault(role)
+
 		if not self.pPolicyConfig:
 			self.pPolicyConfig = CoCreateInstance(CLSID_CPolicyConfigVistaClient, IPolicyConfigVista, CLSCTX_ALL)
 
-		OldDefault = self.GetDefault(role)
 		hr = self.pPolicyConfig.SetDefaultEndpoint(endpoint.getId(), role)
 		if hr:
 			import win32api
@@ -313,6 +333,10 @@ class AudioEndpoints(object):
 	def __str__(self):
 		return str([str(endpoint) for endpoint in self])
 
+	def ChangeFilter(self, DEVICE_STATE=None, PKEY_Device=None):
+		if DEVICE_STATE != None: self.DEVICE_STATE = DEVICE_STATE
+		if PKEY_Device != None: self.PKEY_Device = PKEY_Device
+
 	def __iter__(self, dataFlow=eRender):
 		pEndpoints = self.pDevEnum.EnumAudioEndpoints(dataFlow, self.DEVICE_STATE)
 		for i in range(pEndpoints.GetCount()):
@@ -322,20 +346,29 @@ class AudioEndpoints(object):
 		return int(self.pDevEnum.EnumAudioEndpoints(eRender, self.DEVICE_STATE).GetCount())
 
 if __name__ == '__main__':
+	AudioDevices = AudioEndpoints()
+
+	endpoint = AudioDevices.GetDefault()
+
+	Vol = endpoint.volume.Get()
+	endpoint.volume.Set(0)
+	assert endpoint.volume.Get() == 0.0, 'endpoint.volume.Get() wrong'
+	endpoint.volume.Set(Vol)
+	assert endpoint.volume.Get() == Vol, 'endpoint.volume.Get() wrong'
+
 	#try:
 	#	from EndpointExample import CMMNotificationClient
 	#except:
 	#	pass
 	#else:
-	AudioDevices = AudioEndpoints()
 
-	endpoint = AudioDevices.GetDefault()
+	#
 	#pVolume = _POINTER(IAudioEndpointVolume)(volume)
 
-	print(endpoint.volume)
-	endpoint.volume = .8
-	print(endpoint.volume.test)
-	print(endpoint.volume('Oh my'))
+	#print(endpoint.volume)
+	#endpoint.volume = .8
+	#print(endpoint.volume.test)
+	#print(endpoint.volume('Oh my'))
 	#for endpoint in AudioDevices:
 		#pVolume = _POINTER(IAudioEndpointVolume)(endpoint.endpoint.Activate(IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None))
 		#print(pVolume)
