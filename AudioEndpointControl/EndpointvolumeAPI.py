@@ -11,7 +11,7 @@ from ctypes.wintypes import (
     UINT as _UINT,
     #c_int as _c_int,
     #c_uint32 as _c_uint32,
-#    c_float as _c_float,
+    #c_float as _c_float,
     #LPWSTR as _LPWSTR,
     #LPCWSTR as _LPCWSTR,
     #c_wchar_p as _PCWSTR,
@@ -26,13 +26,52 @@ from comtypes import (
 )
 from .MMConstants import *
 
+from ctypes import *
+
+"""
+typedef struct AUDIO_VOLUME_NOTIFICATION_DATA
+    {
+    GUID guidEventContext;
+    BOOL bMuted;
+    float fMasterVolume;
+    UINT nChannels;
+    float afChannelVolumes[ 1 ];
+    }   AUDIO_VOLUME_NOTIFICATION_DATA;
+
+typedef struct AUDIO_VOLUME_NOTIFICATION_DATA *PAUDIO_VOLUME_NOTIFICATION_DATA;
+"""
+class AUDIO_VOLUME_NOTIFICATION_DATA(Structure):
+    pass
+AUDIO_VOLUME_NOTIFICATION_DATA._fields_ = [
+    ('guidEventContext', _GUID),
+    ('bMuted', _BOOL),
+    ('fMasterVolume', _c_float),
+    ('nChannels', _UINT),
+    ('afChannelVolumes', (_c_float * 1)),
+]
+PAUDIO_VOLUME_NOTIFICATION_DATA = _POINTER(AUDIO_VOLUME_NOTIFICATION_DATA)
+
+IID_IAudioEndpointVolumeCallback = _GUID('{657804FA-D6AD-4496-8A60-352752AF4F89}')
+
+class IAudioEndpointVolumeCallback(_IUnknown):
+		_iid_ = IID_IAudioEndpointVolumeCallback
+		_methods_ = [
+				_COMMETHOD([], _HRESULT, 'OnNotify',
+						(['in'], PAUDIO_VOLUME_NOTIFICATION_DATA, 'pNotify')
+				),
+		]
+
 IID_IAudioEndpointVolume = _GUID('{5CDF2C82-841E-4546-9722-0CF74078229A}')
 
 class IAudioEndpointVolume(_IUnknown):
 		_iid_ = _GUID('{5CDF2C82-841E-4546-9722-0CF74078229A}')
 		_methods_ = [
-				_STDMETHOD(_HRESULT, 'RegisterControlChangeNotify', []),
-				_STDMETHOD(_HRESULT, 'UnregisterControlChangeNotify', []),
+				_COMMETHOD([], _HRESULT, 'RegisterControlChangeNotify',
+						(['in'], _POINTER(IAudioEndpointVolumeCallback), 'pNotify')
+				),
+				_COMMETHOD([], _HRESULT, 'UnregisterControlChangeNotify',
+						(['in'], _POINTER(IAudioEndpointVolumeCallback), 'pNotify')
+				),
 				_COMMETHOD([], _HRESULT, 'GetChannelCount',
 						(['out','retval'], _POINTER(_UINT), 'pnChannelCount'),
 				),
