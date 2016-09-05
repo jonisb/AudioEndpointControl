@@ -165,7 +165,7 @@ class AudioEndpoint(object):
 		self.endpoints = endpoints
 		self.PKEY_Device = PKEY_Device
 		self.IAudioEndpointVolume = _POINTER(IAudioEndpointVolume)(endpoint.Activate(IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None))
-		self._AudioVolume = AudioVolume(endpoint, self.IAudioEndpointVolume)
+		self._AudioVolume = AudioVolume(self, self.IAudioEndpointVolume)
 
 	@property
 	def volume(self):
