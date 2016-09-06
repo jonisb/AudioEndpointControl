@@ -1,5 +1,6 @@
 from __future__ import print_function, unicode_literals, absolute_import
-from . import COMObject as _COMObject, IAudioEndpointVolumeCallback
+from . import COMObject as _COMObject, IMMNotificationClient, IAudioEndpointVolumeCallback
+from . import EDataFlowWrapper, ERoleWrapper, Device_StateWrapper
 from ctypes import POINTER as _POINTER, c_float as _c_float, cast as _cast
 import sys, traceback
 
@@ -25,6 +26,49 @@ class CAudioEndpointVolumeCallback(_COMObject):
 	def OnNotify(self, this, pNotify):
 		try:
 			self._Callback.OnNotify(cNotify(pNotify), self._endpoint)
+		except:
+			traceback.print_exc(file=sys.stdout)
+
+class CMMNotificationClient(_COMObject):
+	_com_interfaces_=[IMMNotificationClient]
+
+	def __init__(self, Callback, endpoints):
+		self._AudioDevices = endpoints
+		self._Callback = Callback
+		_COMObject.__init__(self)
+
+	def OnDeviceStateChanged(self, this, pwstrDeviceId, dwNewState):
+		try:
+			self._Callback.OnDeviceStateChanged(self._AudioDevices(pwstrDeviceId), Device_StateWrapper(dwNewState))
+		except AttributeError: pass
+		except:
+			traceback.print_exc(file=sys.stdout)
+
+	def OnDeviceRemoved(self, this, pwstrDeviceId):
+		try:
+			self._Callback.OnDeviceRemoved(self._AudioDevices(pwstrDeviceId))
+		except AttributeError: pass
+		except:
+			traceback.print_exc(file=sys.stdout)
+
+	def OnDeviceAdded(self, this, pwstrDeviceId):
+		try:
+			self._Callback.OnDeviceAdded(self._AudioDevices(pwstrDeviceId))
+		except AttributeError: pass
+		except:
+			traceback.print_exc(file=sys.stdout)
+
+	def OnDefaultDeviceChanged(self, this, flow, role, pwstrDeviceId):
+		try:
+			self._Callback.OnDefaultDeviceChanged(EDataFlowWrapper(flow), ERoleWrapper(role), self._AudioDevices(pwstrDeviceId))
+		except AttributeError: pass
+		except:
+			traceback.print_exc(file=sys.stdout)
+
+	def OnPropertyValueChanged(self, this, pwstrDeviceId, key):
+		try:
+			self._Callback.OnPropertyValueChanged(self._AudioDevices(pwstrDeviceId), key)
+		except AttributeError: pass
 		except:
 			traceback.print_exc(file=sys.stdout)
 

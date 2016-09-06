@@ -1,13 +1,11 @@
 from __future__ import print_function, unicode_literals
 import AudioEndpointControl
-# COMObject, IMMNotificationClient are used for notifications
-from AudioEndpointControl import COMObject, IMMNotificationClient, IAudioEndpointVolumeCallback
 # EDataFlow enumeration: The EDataFlow enumeration defines constants that indicate the direction in which audio data flows between an audio endpoint device and an application.
-from AudioEndpointControl import EDataFlow, eRender, eCapture, eAll, EDataFlow_enum_count
+from AudioEndpointControl import EDataFlow, eRender, eCapture, eAll, EDataFlow_enum_count, EDataFlowWrapper
 # ERole enumeration: The ERole enumeration defines constants that indicate the role that the system has assigned to an audio endpoint device.
-from AudioEndpointControl import ERole, eConsole, eMultimedia, eCommunications, ERole_enum_count
+from AudioEndpointControl import ERole, eConsole, eMultimedia, eCommunications, ERole_enum_count, ERoleWrapper
 # DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the current state of an audio endpoint device.
-from AudioEndpointControl import DEVICE_STATE, DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL
+from AudioEndpointControl import DEVICE_STATE, DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL, Device_StateWrapper
 #Each PKEY_Xxx property identifier in the following list is a constant of type PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h. All audio endpoint devices have these three device properties.
 from AudioEndpointControl import PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName
 
@@ -16,23 +14,43 @@ EventContext = GUID('{00000000-0000-0000-0000-000000000000}')
 
 # This is an example class used for getting Audio endpoint notifications(events), you can name the class whatever but the methods need to be defined properly like in the example,
 # but what the methods do is up to you. You don't need the methods you don't need events for.
-class CMMNotificationClient(COMObject):
-	_com_interfaces_=[IMMNotificationClient]
+class MMNotificationClient(object):
+	def OnDeviceStateChanged(self, AudioDevice, NewState):
+		#print('OnDeviceStateChanged: {0}, {1}'.format(AudioDevices(DeviceId), DEVICE_STATE[dwNewState]))
+		print('OnDeviceStateChanged: {0}, {1}'.format(AudioDevice, NewState))
 
-	def OnDeviceStateChanged(self, this, pwstrDeviceId, dwNewState):
-			print('OnDeviceStateChanged: {0}, {1}'.format(AudioDevices(pwstrDeviceId), DEVICE_STATE[dwNewState]))
+	def OnDeviceRemoved(self, AudioDevice):
+		print('OnDeviceRemoved: {0}'.format(AudioDevice))
 
-	def OnDeviceRemoved(self, this, pwstrDeviceId):
-			print('OnDeviceRemoved: {0}'.format(AudioDevices(pwstrDeviceId)))
+	def OnDeviceAdded(self, AudioDevice):
+			print('OnDeviceAdded: {0}'.format(AudioDevice))
 
-	def OnDeviceAdded(self, this, pwstrDeviceId):
-			print('OnDeviceAdded: {0}'.format(AudioDevices(pwstrDeviceId)))
+	def OnDefaultDeviceChanged(self, flow, role, AudioDevice):
+		#print('OnDefaultDeviceChanged: {0}, {1}, {2}'.format(EDataFlow[flow], ERole[role], AudioDevices(pwstrDeviceId)))
+		print('OnDefaultDeviceChanged: {0}, {1}, {2}'.format(flow, role, AudioDevice))
 
-	def OnDefaultDeviceChanged(self, this, flow, role, pwstrDeviceId):
-			print('OnDefaultDeviceChanged: {0}, {1}, {2}'.format(EDataFlow[flow], ERole[role], AudioDevices(pwstrDeviceId)))
-
-	def OnPropertyValueChanged(self, this, pwstrDeviceId, key):
-			print('OnPropertyValueChanged: {0}, {1}'.format(AudioDevices(pwstrDeviceId), key))
+	"""
+	def OnPropertyValueChanged(self, AudioDevice, key):
+		print('OnPropertyValueChanged: {0}, {1}'.format(AudioDevice, key))
+		#print(dir(key))
+		#print(key.__getattribute__)
+		#print(key._fields_)
+		#for i in range(14):
+			#print(AudioEndpointControl.PROPERTYKEY(key.fmtid, i).pid)
+			#print(AudioEndpointControl.PROPERTYKEY(key.fmtid, i).fmtid)
+		print(type(key))
+		pStore = AudioDevice.endpoint.OpenPropertyStore(AudioEndpointControl.STGM_READ)
+		#print('test1')
+		#prop = pStore.GetValue(PKEY_Device_FriendlyName)
+		#print(_GetValue(pStore.GetValue(PKEY_Device_FriendlyName)))
+		print(ord(_GetValue(pStore.GetValue(key))))
+		#print(dir(prop.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001))
+		#print('test2')
+		#print(prop.vt)
+		#print('test3')
+		#print(prop.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.pwszVal)
+		#print('test4')
+	"""
 
 class AudioEndpointVolumeCallback(object):
 	def OnNotify(self, Notify, AudioDevice):
@@ -74,7 +92,7 @@ if __name__ == '__main__':
 	try:
 		print("\nLets activate some AudioEndpoint device notifications, you need to create a class with methods that respond to the events.")
 		print("You can change the default audio device or enable/disable some devices to see more events.\nTo exit press CTRL+C.\n")
-		AudioDevices.RegisterCallback(CMMNotificationClient())
+		AudioDevices.RegisterCallback(MMNotificationClient())
 		#OldDefault = AudioDevices.SetDefault(AudioDevices('{0.0.0.00000000}.{1797e540-0196-47fd-9a36-9e34916bfc5f}'))
 		time.sleep(60)
 	except KeyboardInterrupt:

@@ -306,23 +306,23 @@ class AudioEndpoints(object):
 		return OldDefault
 
 	def RegisterCallback(self, Callback):
-		self.Callback = Callback
+		self.Callback = CMMNotificationClient(Callback, self)
 		hr = self.pDevEnum.RegisterEndpointNotificationCallback(self.Callback)
 		if hr:
 			import win32api
-			print('RegisterEndpointNotificationCallback', hr)
-			print('SetDefaultEndpoint', win32api.FormatMessage(hr))
+			print('RegisterEndpointNotificationCallback', hr, win32api.FormatMessage(hr))
 
 	def UnregisterCallback(self):
 		try:
 			hr = self.pDevEnum.UnregisterEndpointNotificationCallback(self.Callback)
-			self.Callback = None
-			if hr:
-				import win32api
-				print('UnregisterEndpointNotificationCallback', hr)
-				print('SetDefaultEndpoint', win32api.FormatMessage(hr))
 		except AttributeError:
 			pass
+		else:
+			if hr:
+				import win32api
+				print('UnregisterEndpointNotificationCallback', hr, win32api.FormatMessage(hr))
+		finally:
+			self.Callback = None
 
 	def __call__(self, ID):
 		try:
