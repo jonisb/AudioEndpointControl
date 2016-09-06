@@ -11,6 +11,9 @@ from AudioEndpointControl import DEVICE_STATE, DEVICE_STATE_ACTIVE, DEVICE_STATE
 #Each PKEY_Xxx property identifier in the following list is a constant of type PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h. All audio endpoint devices have these three device properties.
 from AudioEndpointControl import PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName
 
+from comtypes import GUID
+EventContext = GUID('{00000000-0000-0000-0000-000000000000}')
+
 # This is an example class used for getting Audio endpoint notifications(events), you can name the class whatever but the methods need to be defined properly like in the example,
 # but what the methods do is up to you. You don't need the methods you don't need events for.
 class CMMNotificationClient(COMObject):
@@ -31,27 +34,17 @@ class CMMNotificationClient(COMObject):
 	def OnPropertyValueChanged(self, this, pwstrDeviceId, key):
 			print('OnPropertyValueChanged: {0}, {1}'.format(AudioDevices(pwstrDeviceId), key))
 
-class CAudioEndpointVolumeCallback(COMObject):
-	_com_interfaces_=[IAudioEndpointVolumeCallback]
-
-	def OnNotify(self, this, pNotify):
-		try:
-			print('OnNotify: guidEventContext {0}'.format(pNotify.contents.guidEventContext))
-		except: pass
-		try:
-			print('OnNotify: bMuted {0}'.format(pNotify.contents.bMuted))
-		except: pass
-		try:
-			print('OnNotify: fMasterVolume {0}'.format(pNotify.contents.fMasterVolume))
-		except: pass
-		try:
-			print('OnNotify: nChannels {0}'.format(pNotify.contents.nChannels))
-		except: pass
-		from ctypes import POINTER, c_float, cast
-		try:
-			for channel in range(pNotify.contents.nChannels):
-				print('OnNotify: afChannelVolumes {0}'.format(cast(pNotify.contents.afChannelVolumes, POINTER(c_float))[channel]))
-		except: pass
+class AudioEndpointVolumeCallback(object):
+	def OnNotify(self, Notify, AudioDevice):
+		print('OnNotify: AudioDevice: {0}'.format(AudioDevice))
+		print('OnNotify: EventContext: {0}'.format(Notify.EventContext))
+		if EventContext == Notify.EventContext:
+			print("I changed the volume, but I did not shoot the deputy.")
+		print('OnNotify: Muted: {0}'.format(Notify.Muted))
+		print('OnNotify: MasterVolume: {0}'.format(Notify.MasterVolume))
+		print('OnNotify: Channels: {0}'.format(Notify.Channels))
+		print('OnNotify: ChannelVolumes: {0}'.format(Notify.ChannelVolumes))
+		print()
 
 if __name__ == '__main__':
 	print("When creating the AudioEndpoints object you can specify what endpoint(s) you want shown (ACTIVE, DISABLED, NOTPRESENT, UNPLUGGED, ALL).\n")
@@ -96,12 +89,21 @@ if __name__ == '__main__':
 	try:
 		print("\nLets activate some AudioEndpoint volume notifications, you need to create a class with methods that respond to the events.")
 		print("You can change the volume or mute/unmute of any channel on the default audio device.\nTo exit press CTRL+C.\n")
-		endpoint = AudioDevices.GetDefault()
-		endpoint.volume.RegisterControlChangeNotify(CAudioEndpointVolumeCallback())
+		endpoints = []
+		for AudioDevice in AudioDevices:
+			endpoints.append(AudioDevice)
+			endpoints[-1].RegisterControlChangeNotify(AudioEndpointVolumeCallback())
+		time.sleep(5)
+		for endpoint in endpoints:
+			if endpoint.isDefault():
+				VolSave = endpoint.volume.Get()
+				endpoint.volume.Set(0, pguidEventContext=EventContext)
 		time.sleep(60)
 	except KeyboardInterrupt:
 		pass
 	finally:
 		print("Remember to unregister when you don't want notifications anymore.")
-		endpoint.volume.UnregisterControlChangeNotify()
+		for endpoint in endpoints:
+			endpoint.UnregisterControlChangeNotify()
+			endpoint.volume.Set(VolSave, pguidEventContext=EventContext)
 		print('and done.')
