@@ -19,12 +19,18 @@ except ImportError:
 from .MMConstants import *
 from .EndpointvolumeAPI import *
 from .PolicyConfigAPI import *
+from .Notifications import *
 
 _CLSID_MMDeviceEnumerator = _MMDeviceEnumerator._reg_clsid_
 
 def _GetValue(value):
 	"""Need to do this in a function as comtypes seems to have a problem if it's in a class."""
-	return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.pwszVal
+	#Types for vt defined here: https://msdn.microsoft.com/en-us/library/windows/desktop/aa380072%28v=vs.85%29.aspx
+	if value.vt == 0: return None
+	if value.vt == 31: return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.pwszVal
+	else:
+		#print('vt:', value.vt,)
+		return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.cVal
 
 from functools import partial as _partial
 
@@ -100,24 +106,23 @@ class AudioVolume(object):
 
 	def RegisterControlChangeNotify(self, Callback):
 		"""Registers a client's notification callback interface."""
-		self.Callback = Callback
+		self.Callback = CAudioEndpointVolumeCallback(Callback, self.endpoint)
 		hr = self.IAudioEndpointVolume.RegisterControlChangeNotify(self.Callback)
 		if hr:
 			import win32api
-			print('RegisterControlChangeNotify', hr)
-			print('SetDefaultEndpoint', win32api.FormatMessage(hr))
+			print('RegisterControlChangeNotify', hr, win32api.FormatMessage(hr))
 
 	def UnregisterControlChangeNotify(self):
 		"""Deletes the registration of a client's notification callback interface."""
 		try:
 			hr = self.IAudioEndpointVolume.UnregisterControlChangeNotify(self.Callback)
-			self.Callback = None
+		except AttributeError: pass
+		else:
 			if hr:
 				import win32api
-				print('UnregisterControlChangeNotify', hr)
-				print('SetDefaultEndpoint', win32api.FormatMessage(hr))
-		except AttributeError:
-			pass
+				print('UnregisterControlChangeNotify', hr, win32api.FormatMessage(hr))
+		finally:
+			self.Callback = None
 
 	def __add__(self, other=1):
 		for _ in range(other):
@@ -166,6 +171,8 @@ class AudioEndpoint(object):
 		self.PKEY_Device = PKEY_Device
 		self.IAudioEndpointVolume = _POINTER(IAudioEndpointVolume)(endpoint.Activate(IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None))
 		self._AudioVolume = AudioVolume(self, self.IAudioEndpointVolume)
+		self.RegisterControlChangeNotify = self._AudioVolume.RegisterControlChangeNotify
+		self.UnregisterControlChangeNotify = self._AudioVolume.UnregisterControlChangeNotify
 
 	@property
 	def volume(self):
@@ -304,23 +311,23 @@ class AudioEndpoints(object):
 		return OldDefault
 
 	def RegisterCallback(self, Callback):
-		self.Callback = Callback
+		self.Callback = CMMNotificationClient(Callback, self)
 		hr = self.pDevEnum.RegisterEndpointNotificationCallback(self.Callback)
 		if hr:
 			import win32api
-			print('RegisterEndpointNotificationCallback', hr)
-			print('SetDefaultEndpoint', win32api.FormatMessage(hr))
+			print('RegisterEndpointNotificationCallback', hr, win32api.FormatMessage(hr))
 
 	def UnregisterCallback(self):
 		try:
 			hr = self.pDevEnum.UnregisterEndpointNotificationCallback(self.Callback)
-			self.Callback = None
-			if hr:
-				import win32api
-				print('UnregisterEndpointNotificationCallback', hr)
-				print('SetDefaultEndpoint', win32api.FormatMessage(hr))
 		except AttributeError:
 			pass
+		else:
+			if hr:
+				import win32api
+				print('UnregisterEndpointNotificationCallback', hr, win32api.FormatMessage(hr))
+		finally:
+			self.Callback = None
 
 	def __call__(self, ID):
 		try:
