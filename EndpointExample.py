@@ -9,8 +9,9 @@ from AudioEndpointControl import DEVICE_STATE, DEVICE_STATE_ACTIVE, DEVICE_STATE
 #Each PKEY_Xxx property identifier in the following list is a constant of type PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h. All audio endpoint devices have these three device properties.
 from AudioEndpointControl import PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName
 
+# If you want to know that the volume/mute events are done by this program, you need to send a program specific guid to the volume methods.
 from comtypes import GUID
-EventContext = GUID('{00000000-0000-0000-0000-000000000000}')
+AppID = GUID('{00000000-0000-0000-0000-000000000001}')
 
 # This is an example class used for getting Audio endpoint notifications(events), you can name the class whatever but the methods need to be defined properly like in the example,
 # but what the methods do is up to you. You don't need the methods you don't need events for.
@@ -56,7 +57,7 @@ class AudioEndpointVolumeCallback(object):
 	def OnNotify(self, Notify, AudioDevice):
 		print('OnNotify: AudioDevice: {0}'.format(AudioDevice))
 		print('OnNotify: EventContext: {0}'.format(Notify.EventContext))
-		if EventContext == Notify.EventContext:
+		if AppID == Notify.EventContext:
 			print("I changed the volume, but I did not shoot the deputy.")
 		print('OnNotify: Muted: {0}'.format(Notify.Muted))
 		print('OnNotify: MasterVolume: {0}'.format(Notify.MasterVolume))
@@ -111,11 +112,11 @@ if __name__ == '__main__':
 		for AudioDevice in AudioDevices:
 			endpoints.append(AudioDevice)
 			endpoints[-1].RegisterControlChangeNotify(AudioEndpointVolumeCallback())
+			if endpoints[-1].isDefault():
+				endpoint = endpoints[-1]
+		VolSave = endpoint.volume.Get()
 		time.sleep(5)
-		for endpoint in endpoints:
-			if endpoint.isDefault():
-				VolSave = endpoint.volume.Get()
-				endpoint.volume.Set(0, pguidEventContext=EventContext)
+		endpoint.volume.Set(0, pguidEventContext=AppID)
 		time.sleep(60)
 	except KeyboardInterrupt:
 		pass
@@ -123,5 +124,6 @@ if __name__ == '__main__':
 		print("Remember to unregister when you don't want notifications anymore.")
 		for endpoint in endpoints:
 			endpoint.UnregisterControlChangeNotify()
-			endpoint.volume.Set(VolSave, pguidEventContext=EventContext)
+			if endpoint.isDefault():
+				endpoint.volume.Set(VolSave, pguidEventContext=AppID)
 		print('and done.')
