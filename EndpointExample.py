@@ -18,7 +18,6 @@ AppID = GUID('{00000000-0000-0000-0000-000000000001}')
 # but what the methods do is up to you. You don't need the methods you don't need events for.
 class MMNotificationClient(object):
 	def OnDeviceStateChanged(self, AudioDevice, NewState):
-		#print('OnDeviceStateChanged: {0}, {1}'.format(AudioDevices(DeviceId), DEVICE_STATE[dwNewState]))
 		print('OnDeviceStateChanged: {0}, {1}'.format(AudioDevice, NewState))
 
 	def OnDeviceRemoved(self, AudioDevice):
@@ -28,32 +27,14 @@ class MMNotificationClient(object):
 			print('OnDeviceAdded: {0}'.format(AudioDevice))
 
 	def OnDefaultDeviceChanged(self, flow, role, AudioDevice):
-		#print('OnDefaultDeviceChanged: {0}, {1}, {2}'.format(EDataFlow[flow], ERole[role], AudioDevices(pwstrDeviceId)))
 		print('OnDefaultDeviceChanged: {0}, {1}, {2}'.format(flow, role, AudioDevice))
 
-	"""
+	# I'm unsure if the property key has usable data.
 	def OnPropertyValueChanged(self, AudioDevice, key):
 		print('OnPropertyValueChanged: {0}, {1}'.format(AudioDevice, key))
-		#print(dir(key))
-		#print(key.__getattribute__)
-		#print(key._fields_)
-		#for i in range(14):
-			#print(AudioEndpointControl.PROPERTYKEY(key.fmtid, i).pid)
-			#print(AudioEndpointControl.PROPERTYKEY(key.fmtid, i).fmtid)
-		print(type(key))
-		pStore = AudioDevice.endpoint.OpenPropertyStore(AudioEndpointControl.STGM_READ)
-		#print('test1')
-		#prop = pStore.GetValue(PKEY_Device_FriendlyName)
-		#print(_GetValue(pStore.GetValue(PKEY_Device_FriendlyName)))
-		print(ord(_GetValue(pStore.GetValue(key))))
-		#print(dir(prop.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001))
-		#print('test2')
-		#print(prop.vt)
-		#print('test3')
-		#print(prop.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.pwszVal)
-		#print('test4')
-	"""
 
+# This is an example class used for getting Audio endpoint volume notifications(events), you can name the class whatever but the methods need to be defined properly like in the example,
+# but what the methods do is up to you. You don't need the methods you don't need events for.
 class AudioEndpointVolumeCallback(object):
 	def OnNotify(self, Notify, AudioDevice):
 		print('OnNotify: AudioDevice: {0}'.format(AudioDevice))
