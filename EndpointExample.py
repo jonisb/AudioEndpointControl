@@ -1,12 +1,13 @@
 from __future__ import print_function, unicode_literals
 import AudioEndpointControl
 # EDataFlow enumeration: The EDataFlow enumeration defines constants that indicate the direction in which audio data flows between an audio endpoint device and an application.
-from AudioEndpointControl import EDataFlow, eRender, eCapture, eAll, EDataFlow_enum_count, EDataFlowWrapper
+from AudioEndpointControl import eRender, eCapture, eAll
 # ERole enumeration: The ERole enumeration defines constants that indicate the role that the system has assigned to an audio endpoint device.
-from AudioEndpointControl import ERole, eConsole, eMultimedia, eCommunications, ERole_enum_count, ERoleWrapper
+from AudioEndpointControl import eConsole, eMultimedia, eCommunications
 # DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the current state of an audio endpoint device.
-from AudioEndpointControl import DEVICE_STATE, DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL, Device_StateWrapper
-#Each PKEY_Xxx property identifier in the following list is a constant of type PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h. All audio endpoint devices have these three device properties.
+from AudioEndpointControl import DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL
+# Each PKEY_Xxx property identifier in the following list is a constant of type PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h.
+# All audio endpoint devices have these three device properties.
 from AudioEndpointControl import PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName
 
 # If you want to know that the volume/mute events are done by this program, you need to send a program specific guid to the volume methods.
