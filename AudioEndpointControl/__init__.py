@@ -25,7 +25,12 @@ _CLSID_MMDeviceEnumerator = _MMDeviceEnumerator._reg_clsid_
 
 def _GetValue(value):
 	"""Need to do this in a function as comtypes seems to have a problem if it's in a class."""
-	return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.pwszVal
+	#Types for vt defined here: https://msdn.microsoft.com/en-us/library/windows/desktop/aa380072%28v=vs.85%29.aspx
+	if value.vt == 0: return None
+	if value.vt == 31: return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.pwszVal
+	else:
+		#print('vt:', value.vt,)
+		return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.cVal
 
 from functools import partial as _partial
 
