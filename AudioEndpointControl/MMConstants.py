@@ -1,35 +1,33 @@
 from __future__ import print_function, unicode_literals
 from comtypes import GUID as _GUID
-#from comtypes.client import ShowEvents, GetEvents
-#from _ctypes import COMError
 try:
-	from MMDeviceAPILib import _tagpropertykey, eRender, eCapture, eAll, EDataFlow_enum_count, eConsole, eMultimedia, eCommunications, ERole_enum_count
+    from MMDeviceAPILib import _tagpropertykey, eRender, eCapture, eAll, EDataFlow_enum_count, eConsole, eMultimedia, eCommunications, ERole_enum_count
 except ImportError:
-	from comtypes.client import GetModule
-	GetModule("mmdeviceapi.tlb")
-	from comtypes.gen.MMDeviceAPILib import _tagpropertykey, eRender, eCapture, eAll, EDataFlow_enum_count, eConsole, eMultimedia, eCommunications, ERole_enum_count
+    from comtypes.client import GetModule
+    GetModule("mmdeviceapi.tlb")
+    from comtypes.gen.MMDeviceAPILib import _tagpropertykey, eRender, eCapture, eAll, EDataFlow_enum_count, eConsole, eMultimedia, eCommunications, ERole_enum_count
 
 PROPERTYKEY = _tagpropertykey
 
 class _ValueWrapperClass(object):
-	def __init__(self, value):
-		self._value = value
-	def __int__(self):
-		return self._value
+    def __init__(self, value):
+        self._value = value
+    def __int__(self):
+        return self._value
 
 # EDataFlow enumeration: The EDataFlow enumeration defines constants that indicate the direction in which audio data flows between an audio endpoint device and an application.
 EDataFlow = {eRender: 'eRender', eCapture: 'eCapture', eAll: 'eAll', EDataFlow_enum_count: 'EDataFlow_enum_count'}
 
 class EDataFlowWrapper(_ValueWrapperClass):
-	def __str__(self):
-		return EDataFlow[self._value]
+    def __str__(self):
+        return EDataFlow[self._value]
 
 # ERole enumeration: The ERole enumeration defines constants that indicate the role that the system has assigned to an audio endpoint device.
 ERole = {eConsole: 'eConsole', eMultimedia: 'eMultimedia', eCommunications: 'eCommunications', ERole_enum_count: 'ERole_enum_count'}
 
 class ERoleWrapper(_ValueWrapperClass):
-	def __str__(self):
-		return ERole[self._value]
+    def __str__(self):
+        return ERole[self._value]
 
 # DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the current state of an audio endpoint device.
 DEVICE_STATE_ACTIVE = 0x00000001
@@ -40,8 +38,8 @@ DEVICE_STATEMASK_ALL = 0x0000000F
 DEVICE_STATE = {DEVICE_STATE_ACTIVE: 'DEVICE_STATE_ACTIVE', DEVICE_STATE_DISABLED: 'DEVICE_STATE_DISABLED', DEVICE_STATE_NOTPRESENT: 'DEVICE_STATE_NOTPRESENT', DEVICE_STATE_UNPLUGGED: 'DEVICE_STATE_UNPLUGGED', DEVICE_STATEMASK_ALL: 'DEVICE_STATEMASK_ALL'}
 
 class Device_StateWrapper(_ValueWrapperClass):
-	def __str__(self):
-		return DEVICE_STATE[self._value]
+    def __str__(self):
+        return DEVICE_STATE[self._value]
 
 #The STGM constants are flags that indicate conditions for creating and deleting the object and access modes for the object. The STGM constants are included in the IStorage, IStream, and IPropertySetStorage interfaces and in the StgCreateDocfile, StgCreateStorageEx, StgCreateDocfileOnILockBytes, StgOpenStorage, and StgOpenStorageEx functions.
 #The storage-access mode. This parameter specifies whether to open the property store in read mode, write mode, or read/write mode. Set this parameter to one of the following STGM constants:
