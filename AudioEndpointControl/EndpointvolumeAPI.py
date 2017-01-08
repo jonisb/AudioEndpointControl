@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals, absolute_import
 
 from ctypes import POINTER as _POINTER, HRESULT as _HRESULT, c_float as _c_float

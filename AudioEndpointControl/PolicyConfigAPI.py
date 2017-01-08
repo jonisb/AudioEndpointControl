@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ctypes import HRESULT as _HRESULT
 from ctypes.wintypes import (
         DWORD as _DWORD,
