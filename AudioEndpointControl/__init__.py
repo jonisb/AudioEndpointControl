@@ -10,7 +10,7 @@ from ctypes import POINTER as _POINTER
 from comtypes import CoCreateInstance, COMObject, CLSCTX_INPROC_SERVER, CLSCTX_ALL
 from _ctypes import COMError
 try:
-	from MMDeviceAPILib import MMDeviceEnumerator as _MMDeviceEnumerator, IMMDeviceEnumerator as _IMMDeviceEnumerator, IMMNotificationClient
+	from .MMDeviceAPILib import MMDeviceEnumerator as _MMDeviceEnumerator, IMMDeviceEnumerator as _IMMDeviceEnumerator, IMMNotificationClient
 except ImportError:
 	from comtypes.client import GetModule
 	GetModule("mmdeviceapi.tlb")
