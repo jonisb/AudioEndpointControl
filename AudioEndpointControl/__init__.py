@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals, absolute_import
 
-__version__ =  '0.1a2'
-
 from ctypes import POINTER as _POINTER
 from comtypes import CoCreateInstance, COMObject, CLSCTX_INPROC_SERVER, CLSCTX_ALL
 from _ctypes import COMError
@@ -16,6 +14,8 @@ from .MMConstants import *
 from .EndpointvolumeAPI import *
 from .PolicyConfigAPI import *
 from .Notifications import *
+
+__version__ = '0.1a2'
 
 _CLSID_MMDeviceEnumerator = _MMDeviceEnumerator._reg_clsid_
 
