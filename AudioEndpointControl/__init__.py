@@ -3,7 +3,12 @@
 from __future__ import print_function, unicode_literals, absolute_import
 
 from ctypes import POINTER as _POINTER
-from comtypes import CoCreateInstance, COMObject, CLSCTX_INPROC_SERVER, CLSCTX_ALL
+from comtypes import (
+    CoCreateInstance,
+    COMObject,
+    CLSCTX_INPROC_SERVER,
+    CLSCTX_ALL
+)
 from _ctypes import COMError
 try:
     from .MMDeviceAPILib import (
@@ -30,19 +35,22 @@ _CLSID_MMDeviceEnumerator = _MMDeviceEnumerator._reg_clsid_
 
 
 def _GetValue(value):
-    """Need to do this in a function as comtypes seems to have a problem if it's in a class."""
-    #Types for vt defined here: https://msdn.microsoft.com/en-us/library/windows/desktop/aa380072%28v=vs.85%29.aspx
-    if value.vt == 0: return None
-    if value.vt == 31: return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.pwszVal
+    """
+    Need to do this in a function as comtypes seems to have a problem if it's
+    in a class.
+    """
+    # Types for vt defined here: https://msdn.microsoft.com/en-us/library/windows/desktop/aa380072%28v=vs.85%29.aspx
+    if value.vt == 0:
+        return None
+    if value.vt == 31:
+        return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.pwszVal
     else:
-        #print('vt:', value.vt,)
         return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.cVal
 
 
 from functools import partial as _partial
 
 
-# This is a wrapper for volume related methods.
 class AudioVolume(object):
     """Wrapper for volume related methods."""
     def __init__(self, endpoint, IAudioEndpointVolume):
@@ -70,9 +78,13 @@ class AudioVolume(object):
                 return self.IAudioEndpointVolume.GetMasterVolumeLevel()
         else:
             if Scalar:
-                return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(nChannel)
+                return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(
+                    nChannel
+                )
             else:
-                return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
+                return self.IAudioEndpointVolume.GetChannelVolumeLevel(
+                    nChannel
+                )
 
     def Set(self, fLevelDB, nChannel=0, Scalar=True, pguidEventContext=None):
         """
@@ -86,11 +98,24 @@ class AudioVolume(object):
             return self.Mute(fLevelDB)
         else:
             if nChannel == 0:
-                if Scalar: return self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(fLevelDB, pguidEventContext)
-                else: return self.IAudioEndpointVolume.SetMasterVolumeLevel(fLevelDB, pguidEventContext)
+                if Scalar:
+                    return self.IAudioEndpointVolume.\
+                        SetMasterVolumeLevelScalar(
+                            fLevelDB, pguidEventContext
+                        )
+                else:
+                    return self.IAudioEndpointVolume.\
+                        SetMasterVolumeLevel(fLevelDB, pguidEventContext)
             else:
-                if Scalar: return self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(nChannel-1, fLevelDB, pguidEventContext)
-                else: return self.IAudioEndpointVolume.SetChannelVolumeLevel(nChannel-1, fLevelDB, pguidEventContext)
+                if Scalar:
+                    return self.IAudioEndpointVolume.\
+                        SetChannelVolumeLevelScalar(
+                            nChannel-1, fLevelDB, pguidEventContext
+                        )
+                else:
+                    return self.IAudioEndpointVolume.SetChannelVolumeLevel(
+                        nChannel-1, fLevelDB, pguidEventContext
+                    )
 
     def GetRange(self):
         """Gets the volume range of the audio stream, in decibels."""
@@ -117,10 +142,13 @@ class AudioVolume(object):
     def RegisterControlChangeNotify(self, callback):
         """Registers a client's notification callback interface."""
         self.Callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
-        hr = self.IAudioEndpointVolume.RegisterControlChangeNotify(self.Callback)
+        hr = self.IAudioEndpointVolume.RegisterControlChangeNotify(
+            self.Callback
+        )
         if hr:
             import win32api
-            print('RegisterControlChangeNotify', hr, win32api.FormatMessage(hr))
+            print('RegisterControlChangeNotify', hr,
+                win32api.FormatMessage(hr))
 
     def UnregisterControlChangeNotify(self):
         """
@@ -135,7 +163,8 @@ class AudioVolume(object):
         else:
             if hr:
                 import win32api
-                print('UnregisterControlChangeNotify', hr, win32api.FormatMessage(hr))
+                print('UnregisterControlChangeNotify', hr,
+                    win32api.FormatMessage(hr))
         finally:
             self.Callback = None
 
@@ -233,34 +262,51 @@ class AudioEndpoint(object):
         When Scaler=True (default): Gets the master volume level, expressed as a normalized, audio-tapered value.
         When Scaler=False: Gets the master volume level of the audio stream, in decibels.
         """
-        if Scalar: return self.IAudioEndpointVolume.GetMasterVolumeLevelScalar()
-        else: return self.IAudioEndpointVolume.GetMasterVolumeLevel()
+        if Scalar:
+            return self.IAudioEndpointVolume.GetMasterVolumeLevelScalar()
+        else:
+            return self.IAudioEndpointVolume.GetMasterVolumeLevel()
 
-    def SetMasterVolumeLevel(self, fLevelDB, Scalar=True, pguidEventContext=None):
+    def SetMasterVolumeLevel(
+        self, fLevelDB, Scalar=True, pguidEventContext=None):
         """
         When Scaler=True (default): Sets the master volume level, expressed as a normalized, audio-tapered value.
         When Scaler=False: Sets the master volume level of the audio stream, in decibels.
 
         """
-        if Scalar: return self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(fLevelDB, pguidEventContext)
-        else: return self.IAudioEndpointVolume.SetMasterVolumeLevel(fLevelDB, pguidEventContext)
+        if Scalar:
+            return self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(
+                fLevelDB, pguidEventContext
+            )
+        else:
+            return self.IAudioEndpointVolume.SetMasterVolumeLevel(fLevelDB,
+                pguidEventContext)
 
     def GetChannelVolumeLevel(self, nChannel, Scalar=True):
         """
         When Scaler=True (default): Gets the normalized, audio-tapered volume level of the specified channel of the audio stream.
         When Scaler=False: Gets the volume level, in decibels, of the specified channel in the audio stream.
         """
-        if Scalar: return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(nChannel)
-        else: return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
+        if Scalar:
+            return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(
+                nChannel
+            )
+        else:
+            return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
 
-    def SetChannelVolumeLevel(self, nChannel, fLevelDB, Scaler=True, pguidEventContext=None):
+    def SetChannelVolumeLevel(self, nChannel, fLevelDB,
+        Scaler=True, pguidEventContext=None):
         """
         When Scaler=True (default): Sets the normalized, audio-tapered volume level of the specified channel in the audio stream.
         When Scaler=False: Sets the volume level, in decibels, of the specified channel of the audio stream.
 
         """
-        if Scalar: return self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(nChannel, fLevelDB, pguidEventContext)
-        else: return self.IAudioEndpointVolume.SetChannelVolumeLevel(nChannel, fLevelDB, pguidEventContext)
+        if Scalar:
+            return self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(
+                nChannel, fLevelDB, pguidEventContext)
+        else:
+            return self.IAudioEndpointVolume.SetChannelVolumeLevel(nChannel,
+                fLevelDB, pguidEventContext)
 
     def GetMute(self):
         """Gets the muting state of the audio stream."""
@@ -337,17 +383,20 @@ class AudioEndpoints(object):
         hr = self.pDevEnum.RegisterEndpointNotificationCallback(self.Callback)
         if hr:
             import win32api
-            print('RegisterEndpointNotificationCallback', hr, win32api.FormatMessage(hr))
+            print('RegisterEndpointNotificationCallback', hr,
+                win32api.FormatMessage(hr))
 
     def UnregisterCallback(self):
         try:
-            hr = self.pDevEnum.UnregisterEndpointNotificationCallback(self.Callback)
+            hr = self.pDevEnum.UnregisterEndpointNotificationCallback(
+                self.Callback)
         except AttributeError:
             pass
         else:
             if hr:
                 import win32api
-                print('UnregisterEndpointNotificationCallback', hr, win32api.FormatMessage(hr))
+                print('UnregisterEndpointNotificationCallback', hr,
+                    win32api.FormatMessage(hr))
         finally:
             self.Callback = None
 
