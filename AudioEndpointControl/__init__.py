@@ -1,15 +1,24 @@
 # -*- coding: utf-8 -*-
+
 from __future__ import print_function, unicode_literals, absolute_import
 
 from ctypes import POINTER as _POINTER
 from comtypes import CoCreateInstance, COMObject, CLSCTX_INPROC_SERVER, CLSCTX_ALL
 from _ctypes import COMError
 try:
-    from .MMDeviceAPILib import MMDeviceEnumerator as _MMDeviceEnumerator, IMMDeviceEnumerator as _IMMDeviceEnumerator, IMMNotificationClient
+    from .MMDeviceAPILib import (
+        MMDeviceEnumerator as _MMDeviceEnumerator,
+        IMMDeviceEnumerator as _IMMDeviceEnumerator,
+        IMMNotificationClient
+    )
 except ImportError:
     from comtypes.client import GetModule
     GetModule("mmdeviceapi.tlb")
-    from comtypes.gen.MMDeviceAPILib import MMDeviceEnumerator as _MMDeviceEnumerator, IMMDeviceEnumerator as _IMMDeviceEnumerator, IMMNotificationClient
+    from comtypes.gen.MMDeviceAPILib import (
+        MMDeviceEnumerator as _MMDeviceEnumerator,
+        IMMDeviceEnumerator as _IMMDeviceEnumerator,
+        IMMNotificationClient
+    )
 from .MMConstants import *
 from .EndpointvolumeAPI import *
 from .PolicyConfigAPI import *
@@ -35,13 +44,13 @@ from functools import partial as _partial
 
 # This is a wrapper for volume related methods.
 class AudioVolume(object):
+    """Wrapper for volume related methods."""
     def __init__(self, endpoint, IAudioEndpointVolume):
         self.endpoint = endpoint
         self.IAudioEndpointVolume = IAudioEndpointVolume
 
     def GetChannelCount(self):
         """Gets a count of the channels in the audio stream."""
-        #return self.IAudioEndpointVolume.GetChannelCount()
         return self.IAudioEndpointVolume.GetChannelCount()
 
     def __len__(self):
@@ -100,22 +109,29 @@ class AudioVolume(object):
         return self.IAudioEndpointVolume.GetVolumeStepInfo()
 
     def QueryHardwareSupport(self):
-        """Queries the audio endpoint device for its hardware-supported functions."""
+        """
+        Queries the audio endpoint device for its hardware-supported functions.
+        """
         return self.IAudioEndpointVolume.QueryHardwareSupport()
 
-    def RegisterControlChangeNotify(self, Callback):
+    def RegisterControlChangeNotify(self, callback):
         """Registers a client's notification callback interface."""
-        self.Callback = CAudioEndpointVolumeCallback(Callback, self.endpoint)
+        self.Callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
         hr = self.IAudioEndpointVolume.RegisterControlChangeNotify(self.Callback)
         if hr:
             import win32api
             print('RegisterControlChangeNotify', hr, win32api.FormatMessage(hr))
 
     def UnregisterControlChangeNotify(self):
-        """Deletes the registration of a client's notification callback interface."""
+        """
+        Deletes the registration of a client's notification callback interface.
+        """
         try:
-            hr = self.IAudioEndpointVolume.UnregisterControlChangeNotify(self.Callback)
-        except AttributeError: pass
+            hr = self.IAudioEndpointVolume.UnregisterControlChangeNotify(
+                self.Callback
+            )
+        except AttributeError:
+            pass
         else:
             if hr:
                 import win32api
@@ -161,19 +177,27 @@ class AudioVolume(object):
 
 # This is a wrapper for a single COM endpoint.
 class AudioEndpoint(object):
-    def __init__(self, endpoint, endpoints, PKEY_Device=PKEY_Device_FriendlyName):
+    """Wrapper for a single COM endpoint."""
+    def __init__(
+        self, endpoint, endpoints, PKEY_Device=PKEY_Device_FriendlyName
+    ):
         """Initializes an endpoint object."""
         self.endpoint = endpoint
         self.endpoints = endpoints
         self.PKEY_Device = PKEY_Device
-        self.IAudioEndpointVolume = _POINTER(IAudioEndpointVolume)(endpoint.Activate(IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None))
+        self.IAudioEndpointVolume = _POINTER(IAudioEndpointVolume)(
+            endpoint.Activate(
+                IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None
+            )
+        )
         self._AudioVolume = AudioVolume(self, self.IAudioEndpointVolume)
-        self.RegisterControlChangeNotify = self._AudioVolume.RegisterControlChangeNotify
-        self.UnregisterControlChangeNotify = self._AudioVolume.UnregisterControlChangeNotify
+        self.RegisterControlChangeNotify = self._AudioVolume.\
+            RegisterControlChangeNotify
+        self.UnregisterControlChangeNotify = self._AudioVolume.\
+            UnregisterControlChangeNotify
 
     @property
     def volume(self):
-        #return self.GetMasterVolumeLevel()
         return self._AudioVolume
 
     @volume.setter
@@ -248,7 +272,6 @@ class AudioEndpoint(object):
 
     def GetChannelCount(self):
         """Gets a count of the channels in the audio stream."""
-        #return self.IAudioEndpointVolume.GetChannelCount()
         return len(self._AudioVolume)
 
     def VolumeStepDown(self, pguidEventContext=None):
@@ -275,20 +298,33 @@ class AudioEndpoint(object):
 
 
 class AudioEndpoints(object):
-    def __init__(self, DEVICE_STATE=DEVICE_STATE_ACTIVE, PKEY_Device=PKEY_Device_FriendlyName):
+    def __init__(
+        self,
+        DEVICE_STATE=DEVICE_STATE_ACTIVE,
+        PKEY_Device=PKEY_Device_FriendlyName
+    ):
         self.DEVICE_STATE = DEVICE_STATE
         self.PKEY_Device = PKEY_Device
-        self.pDevEnum = CoCreateInstance(_CLSID_MMDeviceEnumerator, _IMMDeviceEnumerator, CLSCTX_INPROC_SERVER)
+        self.pDevEnum = CoCreateInstance(
+            _CLSID_MMDeviceEnumerator,
+            _IMMDeviceEnumerator,
+            CLSCTX_INPROC_SERVER
+        )
         self.pPolicyConfig = None
 
     def GetDefault(self, role=eConsole, dataFlow=eRender):
-        return AudioEndpoint(self.pDevEnum.GetDefaultAudioEndpoint(dataFlow, role), self, self.PKEY_Device)
+        return AudioEndpoint(
+            self.pDevEnum.GetDefaultAudioEndpoint(dataFlow, role),
+            self,
+            self.PKEY_Device
+        )
 
     def SetDefault(self, endpoint, role=eConsole):
         OldDefault = self.GetDefault(role)
 
         if not self.pPolicyConfig:
-            self.pPolicyConfig = CoCreateInstance(CLSID_CPolicyConfigVistaClient, IPolicyConfigVista, CLSCTX_ALL)
+            self.pPolicyConfig = CoCreateInstance(
+                CLSID_CPolicyConfigVistaClient, IPolicyConfigVista, CLSCTX_ALL)
 
         hr = self.pPolicyConfig.SetDefaultEndpoint(endpoint.getId(), role)
         if hr:
@@ -296,8 +332,8 @@ class AudioEndpoints(object):
             print('SetDefaultEndpoint', win32api.FormatMessage(hr))
         return OldDefault
 
-    def RegisterCallback(self, Callback):
-        self.Callback = CMMNotificationClient(Callback, self)
+    def RegisterCallback(self, callback):
+        self.Callback = CMMNotificationClient(callback, self)
         hr = self.pDevEnum.RegisterEndpointNotificationCallback(self.Callback)
         if hr:
             import win32api
@@ -317,7 +353,11 @@ class AudioEndpoints(object):
 
     def __call__(self, ID):
         try:
-            return AudioEndpoint(self.pDevEnum.GetDevice(ID), self, self.PKEY_Device)
+            return AudioEndpoint(
+                self.pDevEnum.GetDevice(ID),
+                self,
+                self.PKEY_Device
+            )
         except COMError:
             for endpoint in self:
                 if endpoint.getName() == ID:
@@ -327,13 +367,21 @@ class AudioEndpoints(object):
         return str([str(endpoint) for endpoint in self])
 
     def ChangeFilter(self, DEVICE_STATE=None, PKEY_Device=None):
-        if DEVICE_STATE != None: self.DEVICE_STATE = DEVICE_STATE
-        if PKEY_Device != None: self.PKEY_Device = PKEY_Device
+        if DEVICE_STATE is not None:
+            self.DEVICE_STATE = DEVICE_STATE
+        if PKEY_Device is not None:
+            self.PKEY_Device = PKEY_Device
 
     def __iter__(self, dataFlow=eRender):
-        pEndpoints = self.pDevEnum.EnumAudioEndpoints(dataFlow, self.DEVICE_STATE)
+        pEndpoints = self.pDevEnum.EnumAudioEndpoints(
+            dataFlow, self.DEVICE_STATE
+        )
         for i in range(pEndpoints.GetCount()):
             yield AudioEndpoint(pEndpoints.Item(i), self, self.PKEY_Device)
 
     def __len__(self):
-        return int(self.pDevEnum.EnumAudioEndpoints(eRender, self.DEVICE_STATE).GetCount())
+        return int(
+            self.pDevEnum.EnumAudioEndpoints(
+                eRender, self.DEVICE_STATE
+            ).GetCount()
+        )
