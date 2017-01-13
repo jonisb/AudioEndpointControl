@@ -19,8 +19,6 @@ from comtypes import (
     STDMETHOD as _STDMETHOD,
 )
 
-from .MMConstants import *
-
 from ctypes import Structure
 
 
