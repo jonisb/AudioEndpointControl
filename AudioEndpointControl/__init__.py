@@ -147,8 +147,11 @@ class AudioVolume(object):
         )
         if hr:
             import win32api
-            print('RegisterControlChangeNotify', hr,
-                win32api.FormatMessage(hr))
+            print(
+                'RegisterControlChangeNotify',
+                hr,
+                win32api.FormatMessage(hr)
+            )
 
     def UnregisterControlChangeNotify(self):
         """
@@ -163,8 +166,11 @@ class AudioVolume(object):
         else:
             if hr:
                 import win32api
-                print('UnregisterControlChangeNotify', hr,
-                    win32api.FormatMessage(hr))
+                print(
+                    'UnregisterControlChangeNotify',
+                    hr,
+                    win32api.FormatMessage(hr)
+                )
         finally:
             self.Callback = None
 
@@ -268,7 +274,8 @@ class AudioEndpoint(object):
             return self.IAudioEndpointVolume.GetMasterVolumeLevel()
 
     def SetMasterVolumeLevel(
-        self, fLevelDB, Scalar=True, pguidEventContext=None):
+        self, fLevelDB, Scalar=True, pguidEventContext=None
+    ):
         """
         When Scaler=True (default): Sets the master volume level, expressed as a normalized, audio-tapered value.
         When Scaler=False: Sets the master volume level of the audio stream, in decibels.
@@ -279,8 +286,10 @@ class AudioEndpoint(object):
                 fLevelDB, pguidEventContext
             )
         else:
-            return self.IAudioEndpointVolume.SetMasterVolumeLevel(fLevelDB,
-                pguidEventContext)
+            return self.IAudioEndpointVolume.SetMasterVolumeLevel(
+                fLevelDB,
+                pguidEventContext
+            )
 
     def GetChannelVolumeLevel(self, nChannel, Scalar=True):
         """
@@ -294,8 +303,13 @@ class AudioEndpoint(object):
         else:
             return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
 
-    def SetChannelVolumeLevel(self, nChannel, fLevelDB,
-        Scaler=True, pguidEventContext=None):
+    def SetChannelVolumeLevel(
+        self,
+        nChannel,
+        fLevelDB,
+        Scaler=True,
+        pguidEventContext=None
+    ):
         """
         When Scaler=True (default): Sets the normalized, audio-tapered volume level of the specified channel in the audio stream.
         When Scaler=False: Sets the volume level, in decibels, of the specified channel of the audio stream.
@@ -303,10 +317,16 @@ class AudioEndpoint(object):
         """
         if Scalar:
             return self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(
-                nChannel, fLevelDB, pguidEventContext)
+                nChannel,
+                fLevelDB,
+                pguidEventContext
+            )
         else:
-            return self.IAudioEndpointVolume.SetChannelVolumeLevel(nChannel,
-                fLevelDB, pguidEventContext)
+            return self.IAudioEndpointVolume.SetChannelVolumeLevel(
+                nChannel,
+                fLevelDB,
+                pguidEventContext
+            )
 
     def GetMute(self):
         """Gets the muting state of the audio stream."""
@@ -389,14 +409,18 @@ class AudioEndpoints(object):
     def UnregisterCallback(self):
         try:
             hr = self.pDevEnum.UnregisterEndpointNotificationCallback(
-                self.Callback)
+                self.Callback
+            )
         except AttributeError:
             pass
         else:
             if hr:
                 import win32api
-                print('UnregisterEndpointNotificationCallback', hr,
-                    win32api.FormatMessage(hr))
+                print(
+                    'UnregisterEndpointNotificationCallback',
+                    hr,
+                    win32api.FormatMessage(hr)
+                )
         finally:
             self.Callback = None
 
