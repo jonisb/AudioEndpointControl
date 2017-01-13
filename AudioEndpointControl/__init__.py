@@ -29,6 +29,8 @@ from .EndpointvolumeAPI import *
 from .PolicyConfigAPI import *
 from .Notifications import *
 
+from functools import partial as _partial
+
 __version__ = '0.1a2'
 
 _CLSID_MMDeviceEnumerator = _MMDeviceEnumerator._reg_clsid_
@@ -46,9 +48,6 @@ def _GetValue(value):
         return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.pwszVal
     else:
         return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.cVal
-
-
-from functools import partial as _partial
 
 
 class AudioVolume(object):
