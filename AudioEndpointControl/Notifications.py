@@ -2,7 +2,11 @@
 
 from __future__ import print_function, unicode_literals, absolute_import
 
-from . import COMObject as _COMObject, IMMNotificationClient, IAudioEndpointVolumeCallback
+from . import (
+    COMObject as _COMObject,
+    IMMNotificationClient,
+    IAudioEndpointVolumeCallback
+)
 from . import EDataFlowWrapper, ERoleWrapper, Device_StateWrapper
 import sys
 import traceback
