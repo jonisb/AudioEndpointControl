@@ -7,7 +7,8 @@ from comtypes import (
     CoCreateInstance,
     COMObject,
     CLSCTX_INPROC_SERVER,
-    CLSCTX_ALL
+    CLSCTX_ALL,
+    GUID
 )
 from _ctypes import COMError
 try:
@@ -56,9 +57,10 @@ def _GetValue(value):
 
 class AudioVolume(object):
     """Wrapper for volume related methods."""
-    def __init__(self, endpoint, IAudioEndpointVolume):
+    def __init__(self, endpoint, IAudioEndpointVolume, EventContext=None):
         self.endpoint = endpoint
         self.IAudioEndpointVolume = IAudioEndpointVolume
+        self.EventContext = EventContext
 
     def GetChannelCount(self):
         """Gets a count of the channels in the audio stream."""
@@ -96,7 +98,7 @@ class AudioVolume(object):
                     nChannel
                 )
 
-    def Set(self, fLevelDB, nChannel=0, Scalar=True, pguidEventContext=None):
+    def Set(self, fLevelDB, nChannel=0, Scalar=True):
         """
         When Scalar=True: Sets the master volume level, expressed as
         (default)         a normalized, audio-tapered value.
@@ -118,33 +120,33 @@ class AudioVolume(object):
                 if Scalar:
                     return self.IAudioEndpointVolume.\
                         SetMasterVolumeLevelScalar(
-                            fLevelDB, pguidEventContext
+                            fLevelDB, self.EventContext
                         )
                 else:
                     return self.IAudioEndpointVolume.\
-                        SetMasterVolumeLevel(fLevelDB, pguidEventContext)
+                        SetMasterVolumeLevel(fLevelDB, self.EventContext)
             else:
                 if Scalar:
                     return self.IAudioEndpointVolume.\
                         SetChannelVolumeLevelScalar(
-                            nChannel-1, fLevelDB, pguidEventContext
+                            nChannel-1, fLevelDB, self.EventContext
                         )
                 else:
                     return self.IAudioEndpointVolume.SetChannelVolumeLevel(
-                        nChannel-1, fLevelDB, pguidEventContext
+                        nChannel-1, fLevelDB, self.EventContext
                     )
 
     def GetRange(self):
         """Gets the volume range of the audio stream, in decibels."""
         return self.IAudioEndpointVolume.GetVolumeRange()
 
-    def StepDown(self, pguidEventContext=None):
+    def StepDown(self):
         """Decreases the volume level by one step."""
-        return self.IAudioEndpointVolume.VolumeStepDown(pguidEventContext)
+        return self.IAudioEndpointVolume.VolumeStepDown(self.EventContext)
 
-    def StepUp(self, pguidEventContext=None):
+    def StepUp(self):
         """Increases the volume level by one step."""
-        return self.IAudioEndpointVolume.VolumeStepUp(pguidEventContext)
+        return self.IAudioEndpointVolume.VolumeStepUp(self.EventContext)
 
     def GetStepInfo(self):
         """Gets information about the current step in the volume range."""
@@ -222,7 +224,7 @@ class AudioVolume(object):
         return self.getId() != other.getId()
 
     __getitem__ = Get
-    __setitem__ = _partial(Set, Scalar=True, pguidEventContext=None)
+    __setitem__ = _partial(Set, Scalar=True)
     __pos__ = __add__
     __neg__ = __add__
 
@@ -231,18 +233,23 @@ class AudioVolume(object):
 class AudioEndpoint(object):
     """Wrapper for a single COM endpoint."""
     def __init__(
-        self, endpoint, endpoints, PKEY_Device=PKEY_Device_FriendlyName
+        self,
+        endpoint,
+        endpoints,
+        PKEY_Device=PKEY_Device_FriendlyName,
+        EventContext=None
     ):
         """Initializes an endpoint object."""
         self.endpoint = endpoint
         self.endpoints = endpoints
         self.PKEY_Device = PKEY_Device
+        self.EventContext = EventContext
         self.IAudioEndpointVolume = _POINTER(IAudioEndpointVolume)(
             endpoint.Activate(
                 IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None
             )
         )
-        self._AudioVolume = AudioVolume(self, self.IAudioEndpointVolume)
+        self._AudioVolume = AudioVolume(self, self.IAudioEndpointVolume, self.EventContext)
         self.RegisterControlChangeNotify = self._AudioVolume.\
             RegisterControlChangeNotify
         self.UnregisterControlChangeNotify = self._AudioVolume.\
@@ -293,9 +300,7 @@ class AudioEndpoint(object):
         else:
             return self.IAudioEndpointVolume.GetMasterVolumeLevel()
 
-    def SetMasterVolumeLevel(
-        self, fLevelDB, Scalar=True, pguidEventContext=None
-    ):
+    def SetMasterVolumeLevel(self, fLevelDB, Scalar=True):
         """
         When Scalar=True: Sets the master volume level, expressed as
         (default)         a normalized, audio-tapered value.
@@ -305,12 +310,12 @@ class AudioEndpoint(object):
         """
         if Scalar:
             return self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(
-                fLevelDB, pguidEventContext
+                fLevelDB, self.EventContext
             )
         else:
             return self.IAudioEndpointVolume.SetMasterVolumeLevel(
                 fLevelDB,
-                pguidEventContext
+                self.EventContext
             )
 
     def GetChannelVolumeLevel(self, nChannel, Scalar=True):
@@ -328,9 +333,7 @@ class AudioEndpoint(object):
         else:
             return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
 
-    def SetChannelVolumeLevel(
-        self, nChannel, fLevelDB, Scalar=True, pguidEventContext=None
-    ):
+    def SetChannelVolumeLevel(self, nChannel, fLevelDB, Scalar=True):
         """
         When Scalar=True: Sets the normalized, audio-tapered volume level
         (default)         of the specified channel in the audio stream.
@@ -340,32 +343,32 @@ class AudioEndpoint(object):
         """
         if Scalar:
             return self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(
-                nChannel, fLevelDB, pguidEventContext
+                nChannel, fLevelDB, self.EventContext
             )
         else:
             return self.IAudioEndpointVolume.SetChannelVolumeLevel(
-                nChannel, fLevelDB, pguidEventContext
+                nChannel, fLevelDB, self.EventContext
             )
 
     def GetMute(self):
         """Gets the muting state of the audio stream."""
         return self._AudioVolume.Mute()
 
-    def SetMute(self, bMute, pguidEventContext=None):
+    def SetMute(self, bMute):
         """Sets the muting state of the audio stream."""
-        return self.IAudioEndpointVolume.SetMute(bMute, pguidEventContext)
+        return self.IAudioEndpointVolume.SetMute(bMute, self.EventContext)
 
     def GetChannelCount(self):
         """Gets a count of the channels in the audio stream."""
         return len(self._AudioVolume)
 
-    def VolumeStepDown(self, pguidEventContext=None):
+    def VolumeStepDown(self):
         """Decreases the volume level by one step."""
-        return self.IAudioEndpointVolume.VolumeStepDown(pguidEventContext)
+        return self.IAudioEndpointVolume.VolumeStepDown(self.EventContext)
 
-    def VolumeStepUp(self, pguidEventContext=None):
+    def VolumeStepUp(self):
         """Increases the volume level by one step."""
-        return self.IAudioEndpointVolume.VolumeStepUp(pguidEventContext)
+        return self.IAudioEndpointVolume.VolumeStepUp(self.EventContext)
 
     def GetVolumeStepInfo(self):
         """Gets information about the current step in the volume range."""
@@ -386,10 +389,12 @@ class AudioEndpoints(object):
     def __init__(
         self,
         DEVICE_STATE=DEVICE_STATE_ACTIVE,
-        PKEY_Device=PKEY_Device_FriendlyName
+        PKEY_Device=PKEY_Device_FriendlyName,
+        EventContext=GUID.create_new()
     ):
         self.DEVICE_STATE = DEVICE_STATE
         self.PKEY_Device = PKEY_Device
+        self.EventContext = EventContext
         self.pDevEnum = CoCreateInstance(
             _CLSID_MMDeviceEnumerator,
             _IMMDeviceEnumerator,
@@ -401,7 +406,8 @@ class AudioEndpoints(object):
         return AudioEndpoint(
             self.pDevEnum.GetDefaultAudioEndpoint(dataFlow, role),
             self,
-            self.PKEY_Device
+            self.PKEY_Device,
+            self.EventContext
         )
 
     def SetDefault(self, endpoint, role=eConsole):
@@ -451,7 +457,8 @@ class AudioEndpoints(object):
             return AudioEndpoint(
                 self.pDevEnum.GetDevice(ID),
                 self,
-                self.PKEY_Device
+                self.PKEY_Device,
+                self.EventContext
             )
         except COMError:
             for endpoint in self:
@@ -472,7 +479,7 @@ class AudioEndpoints(object):
             dataFlow, self.DEVICE_STATE
         )
         for i in range(pEndpoints.GetCount()):
-            yield AudioEndpoint(pEndpoints.Item(i), self, self.PKEY_Device)
+            yield AudioEndpoint(pEndpoints.Item(i), self, self.PKEY_Device, self.EventContext)
 
     def __len__(self):
         return int(

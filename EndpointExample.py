@@ -11,7 +11,7 @@ from AudioEndpointControl import DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEV
 # All audio endpoint devices have these three device properties.
 from AudioEndpointControl import PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName
 
-# If you want to know that the volume/mute events are done by this program, you need to send a program specific guid to the volume methods.
+# If you want to know that the volume/mute events are done by this program, you need to send a program specific guid when creating the AudioEndpoints object.
 from comtypes import GUID
 AppID = GUID('{00000000-0000-0000-0000-000000000001}')
 
@@ -50,7 +50,7 @@ class AudioEndpointVolumeCallback(object):
 
 if __name__ == '__main__':
     print("When creating the AudioEndpoints object you can specify what endpoint(s) you want shown (ACTIVE, DISABLED, NOTPRESENT, UNPLUGGED, ALL).\n")
-    AudioDevices = AudioEndpointControl.AudioEndpoints(DEVICE_STATE=DEVICE_STATE_ACTIVE, PKEY_Device=PKEY_Device_FriendlyName)
+    AudioDevices = AudioEndpointControl.AudioEndpoints(DEVICE_STATE=DEVICE_STATE_ACTIVE, PKEY_Device=PKEY_Device_FriendlyName, EventContext=AppID)
 
     print("Using str() or print on a AudioEndpoint or AudioEndpoints object results in the text name of the endpoint.\n")
     print("Number of active audio endpoints: {0}".format(len(AudioDevices)))
@@ -99,7 +99,7 @@ if __name__ == '__main__':
                 endpoint = endpoints[-1]
         VolSave = endpoint.volume.Get()
         time.sleep(5)
-        endpoint.volume.Set(0, pguidEventContext=AppID)
+        endpoint.volume.Set(0)
         time.sleep(60)
     except KeyboardInterrupt:
         pass
@@ -108,5 +108,5 @@ if __name__ == '__main__':
         for endpoint in endpoints:
             endpoint.UnregisterControlChangeNotify()
             if endpoint.isDefault():
-                endpoint.volume.Set(VolSave, pguidEventContext=AppID)
+                endpoint.volume.Set(VolSave)
         print('and done.')
