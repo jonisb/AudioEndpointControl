@@ -207,7 +207,7 @@ class AudioVolume(object):
 
     @property
     def Mute(self):
-        return self.IAudioEndpointVolume.GetMute()
+        return bool(self.IAudioEndpointVolume.GetMute())
 
     @Mute.setter
     def Mute(self, bMute):
@@ -349,7 +349,7 @@ class AudioEndpoint(object):
 
     def GetMute(self):
         """Gets the muting state of the audio stream."""
-        return self.IAudioEndpointVolume.GetMute()
+        return self._AudioVolume.Mute()
 
     def SetMute(self, bMute, pguidEventContext=None):
         """Sets the muting state of the audio stream."""
