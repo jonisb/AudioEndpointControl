@@ -69,16 +69,16 @@ class AudioVolume(object):
 
     def Get(self, nChannel=0, Scalar=True):
         """
-        When Scaler=True: Gets the master volume level, expressed as
+        When Scalar=True: Gets the master volume level, expressed as
         (default)         a normalized, audio-tapered value.
 
-        When Scaler=False: Gets the master volume level of the
+        When Scalar=False: Gets the master volume level of the
                            audio stream, in decibels.
 
-        When Scaler=True: Gets the normalized, audio-tapered volume
+        When Scalar=True: Gets the normalized, audio-tapered volume
         (default)         level of the specified channel of the audio stream.
 
-        When Scaler=False: Gets the volume level, in decibels, of the
+        When Scalar=False: Gets the volume level, in decibels, of the
                            specified channel in the audio stream.
         """
         if nChannel == 0:
@@ -98,16 +98,16 @@ class AudioVolume(object):
 
     def Set(self, fLevelDB, nChannel=0, Scalar=True, pguidEventContext=None):
         """
-        When Scaler=True: Sets the master volume level, expressed as
+        When Scalar=True: Sets the master volume level, expressed as
         (default)         a normalized, audio-tapered value.
 
-        When Scaler=False: Sets the master volume level of the
+        When Scalar=False: Sets the master volume level of the
                            audio stream, in decibels.
 
-        When Scaler=True: Sets the normalized, audio-tapered volume level of
+        When Scalar=True: Sets the normalized, audio-tapered volume level of
         (default)         the specified channel in the audio stream.
 
-        When Scaler=False: Sets the volume level, in decibels, of the
+        When Scalar=False: Sets the volume level, in decibels, of the
                            specified channel of the audio stream.
 
         """
@@ -282,10 +282,10 @@ class AudioEndpoint(object):
 
     def GetMasterVolumeLevel(self, Scalar=True):
         """
-        When Scaler=True: Gets the master volume level, expressed as
+        When Scalar=True: Gets the master volume level, expressed as
         (default)         a normalized, audio-tapered value.
 
-        When Scaler=False: Gets the master volume level of the
+        When Scalar=False: Gets the master volume level of the
                            audio stream, in decibels.
         """
         if Scalar:
@@ -297,10 +297,10 @@ class AudioEndpoint(object):
         self, fLevelDB, Scalar=True, pguidEventContext=None
     ):
         """
-        When Scaler=True: Sets the master volume level, expressed as
+        When Scalar=True: Sets the master volume level, expressed as
         (default)         a normalized, audio-tapered value.
 
-        When Scaler=False: Sets the master volume level of the
+        When Scalar=False: Sets the master volume level of the
                            audio stream, in decibels.
         """
         if Scalar:
@@ -315,10 +315,10 @@ class AudioEndpoint(object):
 
     def GetChannelVolumeLevel(self, nChannel, Scalar=True):
         """
-        When Scaler=True: Gets the normalized, audio-tapered volume level
+        When Scalar=True: Gets the normalized, audio-tapered volume level
         (default)         of the specified channel of the audio stream.
 
-        When Scaler=False: Gets the volume level, in decibels, of the
+        When Scalar=False: Gets the volume level, in decibels, of the
                            specified channel in the audio stream.
         """
         if Scalar:
