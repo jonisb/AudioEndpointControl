@@ -245,8 +245,8 @@ class AudioEndpoint(object):
     def volume(self, fLevelDB):
         if type(fLevelDB) == bool:
             return self._AudioVolume.SetMute(fLevelDB)
-        else:
-            return self._AudioVolume.Set(fLevelDB)
+
+        return self._AudioVolume.Set(fLevelDB)
 
     def getName(self):
         """Return an endpoint devices FriendlyName."""
@@ -279,8 +279,8 @@ class AudioEndpoint(object):
         """
         if Scalar:
             return self.IAudioEndpointVolume.GetMasterVolumeLevelScalar()
-        else:
-            return self.IAudioEndpointVolume.GetMasterVolumeLevel()
+
+        return self.IAudioEndpointVolume.GetMasterVolumeLevel()
 
     def SetMasterVolumeLevel(self, fLevelDB, Scalar=True):
         """
@@ -294,11 +294,10 @@ class AudioEndpoint(object):
             return self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(
                 fLevelDB, self.EventContext
             )
-        else:
-            return self.IAudioEndpointVolume.SetMasterVolumeLevel(
-                fLevelDB,
-                self.EventContext
-            )
+
+        return self.IAudioEndpointVolume.SetMasterVolumeLevel(
+            fLevelDB, self.EventContext
+        )
 
     def GetChannelVolumeLevel(self, nChannel, Scalar=True):
         """
@@ -312,8 +311,8 @@ class AudioEndpoint(object):
             return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(
                 nChannel
             )
-        else:
-            return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
+
+        return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
 
     def SetChannelVolumeLevel(self, nChannel, fLevelDB, Scalar=True):
         """
@@ -327,10 +326,10 @@ class AudioEndpoint(object):
             return self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(
                 nChannel, fLevelDB, self.EventContext
             )
-        else:
-            return self.IAudioEndpointVolume.SetChannelVolumeLevel(
-                nChannel, fLevelDB, self.EventContext
-            )
+
+        return self.IAudioEndpointVolume.SetChannelVolumeLevel(
+            nChannel, fLevelDB, self.EventContext
+        )
 
     def GetMute(self):
         """Gets the muting state of the audio stream."""
@@ -382,6 +381,7 @@ class AudioEndpoints(object):
             _IMMDeviceEnumerator,
             CLSCTX_INPROC_SERVER
         )
+        self.callback = None
         self.pPolicyConfig = None
 
     def GetDefault(self, role=Console, dataFlow=Render):
@@ -405,8 +405,8 @@ class AudioEndpoints(object):
         return OldDefault
 
     def RegisterCallback(self, callback):
-        self.Callback = CMMNotificationClient(callback, self)
-        hr = self.pDevEnum.RegisterEndpointNotificationCallback(self.Callback)
+        self.callback = CMMNotificationClient(callback, self)
+        hr = self.pDevEnum.RegisterEndpointNotificationCallback(self.callback)
         if hr:
             print(
                 'RegisterEndpointNotificationCallback',
@@ -417,7 +417,7 @@ class AudioEndpoints(object):
     def UnregisterCallback(self):
         try:
             hr = self.pDevEnum.UnregisterEndpointNotificationCallback(
-                self.Callback
+                self.callback
             )
         except AttributeError:
             pass
@@ -429,7 +429,7 @@ class AudioEndpoints(object):
                     FormatMessage(hr)
                 )
         finally:
-            self.Callback = None
+            self.callback = None
 
     def __call__(self, ID):
         try:
