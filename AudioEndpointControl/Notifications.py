@@ -2,16 +2,15 @@
 
 from __future__ import print_function, unicode_literals, absolute_import
 
-from . import (
-    COMObject as _COMObject,
-    IMMNotificationClient,
-    IAudioEndpointVolumeCallback
-)
-from . import DataFlowType, RoleType, Device_StateType
 import sys
 import traceback
-
 from ctypes import POINTER as _POINTER, c_float as _c_float, cast as _cast
+
+from comtypes import COMObject as _COMObject
+
+from . import IMMNotificationClient
+from .MMConstants import DataFlowType, RoleType, Device_StateType
+from .EndpointvolumeAPI import IAudioEndpointVolumeCallback
 
 
 class cNotify(object):

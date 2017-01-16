@@ -2,15 +2,16 @@
 
 from __future__ import print_function, unicode_literals, absolute_import
 
-from ctypes import POINTER as _POINTER
-from comtypes import (
-    CoCreateInstance,
-    COMObject,
-    CLSCTX_INPROC_SERVER,
-    CLSCTX_ALL,
-    GUID
-)
 from _ctypes import COMError
+from ctypes import POINTER as _POINTER
+from functools import partial as _partial
+from win32api import FormatMessage
+
+from comtypes import CoCreateInstance, CLSCTX_INPROC_SERVER, CLSCTX_ALL, GUID
+
+from .MMConstants import (
+    Render, Console, DEVICE_STATE_ACTIVE, PKEY_Device_FriendlyName, STGM_READ
+)
 try:
     # Try to import local .MMDeviceAPILib for Python 2.6 compability
     from .MMDeviceAPILib import (
@@ -27,13 +28,9 @@ except ImportError:
         IMMDeviceEnumerator as _IMMDeviceEnumerator,
         IMMNotificationClient
     )
-from .MMConstants import Render, Capture, All, Console, Multimedia, Communications
-from .MMConstants import *
-from .EndpointvolumeAPI import *
-from .PolicyConfigAPI import *
-from .Notifications import *
-
-from functools import partial as _partial
+from .Notifications import CAudioEndpointVolumeCallback, CMMNotificationClient
+from .EndpointvolumeAPI import IAudioEndpointVolume, IID_IAudioEndpointVolume
+from .PolicyConfigAPI import CLSID_CPolicyConfigVistaClient, IPolicyConfigVista
 
 __version__ = '0.1a2'
 
@@ -166,11 +163,10 @@ class AudioVolume(object):
             self.Callback
         )
         if hr:
-            import win32api
             print(
                 'RegisterControlChangeNotify',
                 hr,
-                win32api.FormatMessage(hr)
+                FormatMessage(hr)
             )
 
     def UnregisterControlChangeNotify(self):
@@ -185,11 +181,10 @@ class AudioVolume(object):
             pass
         else:
             if hr:
-                import win32api
                 print(
                     'UnregisterControlChangeNotify',
                     hr,
-                    win32api.FormatMessage(hr)
+                    FormatMessage(hr)
                 )
         finally:
             self.Callback = None
@@ -411,7 +406,7 @@ class AudioEndpoints(object):
             self.EventContext
         )
 
-    def SetDefault(self, endpoint, role=eConsole):
+    def SetDefault(self, endpoint, role=Console):
         OldDefault = self.GetDefault(role)
 
         if not self.pPolicyConfig:
@@ -420,19 +415,17 @@ class AudioEndpoints(object):
 
         hr = self.pPolicyConfig.SetDefaultEndpoint(endpoint.getId(), role)
         if hr:
-            import win32api
-            print('SetDefaultEndpoint', win32api.FormatMessage(hr))
+            print('SetDefaultEndpoint', FormatMessage(hr))
         return OldDefault
 
     def RegisterCallback(self, callback):
         self.Callback = CMMNotificationClient(callback, self)
         hr = self.pDevEnum.RegisterEndpointNotificationCallback(self.Callback)
         if hr:
-            import win32api
             print(
                 'RegisterEndpointNotificationCallback',
                 hr,
-                win32api.FormatMessage(hr)
+                FormatMessage(hr)
             )
 
     def UnregisterCallback(self):
@@ -444,11 +437,10 @@ class AudioEndpoints(object):
             pass
         else:
             if hr:
-                import win32api
                 print(
                     'UnregisterEndpointNotificationCallback',
                     hr,
-                    win32api.FormatMessage(hr)
+                    FormatMessage(hr)
                 )
         finally:
             self.Callback = None
