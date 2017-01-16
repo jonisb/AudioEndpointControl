@@ -46,50 +46,53 @@ class _ValueTypeClass(object):
         return self._value
 
 
-# DataFlow enumeration: The DataFlowType class defines constants that indicate the
-# direction in which audio data flows between an audio endpoint device and an
-# application.
-class DataFlowType(_ValueTypeClass):
-    _valueMap = {
+def _CreateValueType(Name, ValueMap):
+    """ """  # Todo
+    ValueType = type(str(Name), (_ValueTypeClass,), {'_valueMap': ValueMap})
+
+    for _value, _name in ValueMap.iteritems():
+        globals()[_name] = ValueType(_value)
+
+    return ValueType
+
+
+# DataFlow enumeration: The DataFlowType class defines constants that indicate
+# the direction in which audio data flows between an audio endpoint device and
+# an application.
+DataFlowType = _CreateValueType(
+    'DataFlowType',
+    {
         eRender: 'Render',
         eCapture: 'Capture',
         eAll: 'All',
         EDataFlow_enum_count: 'DataFlow_enum_count'
     }
-
-
-for _dataflow, _name in DataFlowType._valueMap.iteritems():
-    globals()[_name] = DataFlowType(_dataflow)
+)
 
 # Role enumeration: The RoleType class defines constants that indicate the role
 # that the system has assigned to an audio endpoint device.
-class RoleType(_ValueTypeClass):
-    _valueMap = {
+RoleType = _CreateValueType(
+    'RoleType',
+    {
         eConsole: 'Console',
         eMultimedia: 'Multimedia',
         eCommunications: 'Communications',
         ERole_enum_count: 'Role_enum_count'
     }
-
-
-for _role, _name in RoleType._valueMap.iteritems():
-    globals()[_name] = DataFlowType(_role)
+)
 
 # DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the
 # current state of an audio endpoint device.
-class Device_StateType(_ValueTypeClass):
-    _valueMap = {
+Device_StateType = _CreateValueType(
+    'Device_StateType',
+    {
         0x00000001: 'DEVICE_STATE_ACTIVE',
         0x00000002: 'DEVICE_STATE_DISABLED',
         0x00000004: 'DEVICE_STATE_NOTPRESENT',
         0x00000008: 'DEVICE_STATE_UNPLUGGED',
         0x0000000F: 'DEVICE_STATEMASK_ALL'
     }
-
-
-for _device_state, _name in Device_StateType._valueMap.iteritems():
-    globals()[_name] = DataFlowType(_device_state)
-
+)
 
 # The STGM constants are flags that indicate conditions for creating and
 # deleting the object and access modes for the object. The STGM constants
