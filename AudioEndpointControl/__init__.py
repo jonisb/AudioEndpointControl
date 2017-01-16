@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# TODO: Missing module docstring (missing-docstring)
 
 from __future__ import print_function, unicode_literals, absolute_import
 
@@ -52,6 +53,7 @@ def _GetValue(value):
 
 class AudioVolume(object):
     """Wrapper for volume related methods."""
+    # FIX: Redefining name 'IAudioEndpointVolume' from outer scope (line 32)
     def __init__(self, endpoint, IAudioEndpointVolume, EventContext=None):
         self.callback = None
         self.endpoint = endpoint
@@ -183,7 +185,7 @@ class AudioVolume(object):
         return 'Volume: {0}'.format(self[0])
 
     @property
-    def Mute(self):
+    def Mute(self):  # TODO: Missing method docstring (missing-docstring)
         return bool(self.IAudioEndpointVolume.GetMute())
 
     @Mute.setter
@@ -193,10 +195,12 @@ class AudioVolume(object):
     def __eq__(self, other):
         """Tests if two enpoint devices are the same."""
         return self.getId() == other.getId()
+        # FIX: Instance of 'AudioVolume' has no 'getId' member (no-member)
 
     def __ne__(self, other):
         """Tests if two enpoint devices are not the same."""
         return self.getId() != other.getId()
+        # FIX: Instance of 'AudioVolume' has no 'getId' member (no-member)
 
     __getitem__ = Get
     __setitem__ = _partial(Set, Scalar=True)
@@ -204,14 +208,15 @@ class AudioVolume(object):
     __neg__ = __add__
 
 
+# FIX: Too many instance attributes (8/7) (too-many-instance-attributes)
 class AudioEndpoint(object):
     """Wrapper for a single COM endpoint."""
     def __init__(
-        self,
-        endpoint,
-        endpoints,
-        PKEY_Device=PKEY_Device_FriendlyName,
-        EventContext=None
+            self,
+            endpoint,
+            endpoints,
+            PKEY_Device=PKEY_Device_FriendlyName,
+            EventContext=None
     ):
         """Initializes an endpoint object."""
         self.endpoint = endpoint
@@ -234,13 +239,15 @@ class AudioEndpoint(object):
             UnregisterControlChangeNotify
 
     @property
-    def volume(self):
+    def volume(self):  # TODO: Missing method docstring (missing-docstring)
         return self._AudioVolume
 
     @volume.setter
+    # FIX: Using type() instead of isinstance() for a typecheck.
     def volume(self, fLevelDB):
         if type(fLevelDB) == bool:
             return self._AudioVolume.SetMute(fLevelDB)
+            # FIX: Instance of 'AudioVolume' has no 'SetMute' member
 
         return self._AudioVolume.Set(fLevelDB)
 
@@ -330,6 +337,7 @@ class AudioEndpoint(object):
     def GetMute(self):
         """Gets the muting state of the audio stream."""
         return self._AudioVolume.Mute()
+        # FIX: self._AudioVolume.Mute is not callable (not-callable)
 
     def SetMute(self, bMute):
         """Sets the muting state of the audio stream."""
@@ -362,12 +370,13 @@ class AudioEndpoint(object):
     __str__ = getName
 
 
+# TODO: Missing class docstring (missing-docstring)
 class AudioEndpoints(object):
     def __init__(
-        self,
-        DEVICE_STATE=DEVICE_STATE_ACTIVE,
-        PKEY_Device=PKEY_Device_FriendlyName,
-        EventContext=GUID.create_new()
+            self,
+            DEVICE_STATE=DEVICE_STATE_ACTIVE,
+            PKEY_Device=PKEY_Device_FriendlyName,
+            EventContext=GUID.create_new()
     ):
         self.DEVICE_STATE = DEVICE_STATE
         self.PKEY_Device = PKEY_Device
@@ -380,6 +389,7 @@ class AudioEndpoints(object):
         self.callback = None
         self.pPolicyConfig = None
 
+    # TODO: Missing class docstring (missing-docstring)
     def GetDefault(self, role=Console, dataFlow=Render):
         return AudioEndpoint(
             self.pDevEnum.GetDefaultAudioEndpoint(dataFlow, role),
@@ -388,6 +398,7 @@ class AudioEndpoints(object):
             self.EventContext
         )
 
+    # TODO: Missing class docstring (missing-docstring)
     def SetDefault(self, endpoint, role=Console):
         OldDefault = self.GetDefault(role)
 
@@ -400,6 +411,7 @@ class AudioEndpoints(object):
             print('SetDefaultEndpoint', FormatMessage(hr))
         return OldDefault
 
+    # TODO: Missing class docstring (missing-docstring)
     def RegisterCallback(self, callback):
         self.callback = CMMNotificationClient(callback, self)
         hr = self.pDevEnum.RegisterEndpointNotificationCallback(self.callback)
@@ -410,6 +422,7 @@ class AudioEndpoints(object):
                 FormatMessage(hr)
             )
 
+    # TODO: Missing class docstring (missing-docstring)
     def UnregisterCallback(self):
         if self.callback is not None:
             hr = self.pDevEnum.UnregisterEndpointNotificationCallback(
@@ -439,6 +452,7 @@ class AudioEndpoints(object):
     def __str__(self):
         return str([str(endpoint) for endpoint in self])
 
+    # TODO: Missing class docstring (missing-docstring)
     def ChangeFilter(self, DEVICE_STATE=None, PKEY_Device=None):
         if DEVICE_STATE is not None:
             self.DEVICE_STATE = DEVICE_STATE
@@ -457,6 +471,7 @@ class AudioEndpoints(object):
                 self.EventContext
             )
 
+    # FIX: __len__ does not return non-negative integer
     def __len__(self):
         return int(
             self.pDevEnum.EnumAudioEndpoints(
