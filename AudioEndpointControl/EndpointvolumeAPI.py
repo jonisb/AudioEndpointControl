@@ -5,7 +5,8 @@ from __future__ import print_function, unicode_literals, absolute_import
 from ctypes import (
     POINTER as _POINTER,
     HRESULT as _HRESULT,
-    c_float as _c_float
+    c_float as _c_float,
+    Structure
 )
 from ctypes.wintypes import (
     BOOL as _BOOL,
@@ -16,10 +17,7 @@ from comtypes import (
     GUID as _GUID,
     IUnknown as _IUnknown,
     COMMETHOD as _COMMETHOD,
-    STDMETHOD as _STDMETHOD,
 )
-
-from ctypes import Structure
 
 
 class AUDIO_VOLUME_NOTIFICATION_DATA(Structure):

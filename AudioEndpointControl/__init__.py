@@ -2,9 +2,9 @@
 
 from __future__ import print_function, unicode_literals, absolute_import
 
-from _ctypes import COMError
 from ctypes import POINTER as _POINTER
 from functools import partial as _partial
+from _ctypes import COMError
 from win32api import FormatMessage
 
 from comtypes import CoCreateInstance, CLSCTX_INPROC_SERVER, CLSCTX_ALL, GUID
@@ -245,7 +245,11 @@ class AudioEndpoint(object):
                 IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None
             )
         )
-        self._AudioVolume = AudioVolume(self, self.IAudioEndpointVolume, self.EventContext)
+        self._AudioVolume = AudioVolume(
+            self,
+            self.IAudioEndpointVolume,
+            self.EventContext
+        )
         self.RegisterControlChangeNotify = self._AudioVolume.\
             RegisterControlChangeNotify
         self.UnregisterControlChangeNotify = self._AudioVolume.\
@@ -472,7 +476,12 @@ class AudioEndpoints(object):
             dataFlow, self.DEVICE_STATE
         )
         for i in range(pEndpoints.GetCount()):
-            yield AudioEndpoint(pEndpoints.Item(i), self, self.PKEY_Device, self.EventContext)
+            yield AudioEndpoint(
+                pEndpoints.Item(i),
+                self,
+                self.PKEY_Device,
+                self.EventContext
+            )
 
     def __len__(self):
         return int(

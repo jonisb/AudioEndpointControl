@@ -18,7 +18,6 @@ try:
     )
 except ImportError:
     from comtypes.client import GetModule
-
     GetModule("mmdeviceapi.tlb")
     from comtypes.gen.MMDeviceAPILib import (
         _tagpropertykey,
