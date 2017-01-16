@@ -83,15 +83,13 @@ class AudioVolume(object):
                 return self.IAudioEndpointVolume.GetMasterVolumeLevelScalar()
             else:
                 return self.IAudioEndpointVolume.GetMasterVolumeLevel()
-        else:
-            if Scalar:
-                return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(
-                    nChannel
-                )
-            else:
-                return self.IAudioEndpointVolume.GetChannelVolumeLevel(
-                    nChannel
-                )
+
+        if Scalar:
+            return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(
+                nChannel
+            )
+
+        return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
 
     def Set(self, fLevelDB, nChannel=0, Scalar=True):
         """
@@ -110,26 +108,21 @@ class AudioVolume(object):
         """
         if type(fLevelDB) == bool:
             return self.Mute(fLevelDB)
-        else:
-            if nChannel == 0:
-                if Scalar:
-                    return self.IAudioEndpointVolume.\
-                        SetMasterVolumeLevelScalar(
-                            fLevelDB, self.EventContext
-                        )
-                else:
-                    return self.IAudioEndpointVolume.\
-                        SetMasterVolumeLevel(fLevelDB, self.EventContext)
+
+        if nChannel == 0:
+            if Scalar:
+                return self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(
+                    fLevelDB, self.EventContext)
             else:
-                if Scalar:
-                    return self.IAudioEndpointVolume.\
-                        SetChannelVolumeLevelScalar(
-                            nChannel-1, fLevelDB, self.EventContext
-                        )
-                else:
-                    return self.IAudioEndpointVolume.SetChannelVolumeLevel(
-                        nChannel-1, fLevelDB, self.EventContext
-                    )
+                return self.IAudioEndpointVolume.SetMasterVolumeLevel(
+                    fLevelDB, self.EventContext)
+
+        if Scalar:
+            return self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(
+                nChannel-1, fLevelDB, self.EventContext)
+
+        return self.IAudioEndpointVolume.SetChannelVolumeLevel(
+            nChannel-1, fLevelDB, self.EventContext)
 
     def GetRange(self):
         """Gets the volume range of the audio stream, in decibels."""
