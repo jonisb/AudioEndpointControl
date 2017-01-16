@@ -160,16 +160,12 @@ class AudioVolume(object):
         """
         Deletes the registration of a client's notification callback interface.
         """
-        try:
+        if self.callback is not None:
             hr = self.IAudioEndpointVolume.UnregisterControlChangeNotify(
                 self.callback
             )
-        except AttributeError:
-            pass
-        else:
             if hr:
                 print('UnregisterControlChangeNotify', hr, FormatMessage(hr))
-        finally:
             self.callback = None
 
     def __add__(self, other=1):
@@ -415,20 +411,16 @@ class AudioEndpoints(object):
             )
 
     def UnregisterCallback(self):
-        try:
+        if self.callback is not None:
             hr = self.pDevEnum.UnregisterEndpointNotificationCallback(
                 self.callback
             )
-        except AttributeError:
-            pass
-        else:
             if hr:
                 print(
                     'UnregisterEndpointNotificationCallback',
                     hr,
                     FormatMessage(hr)
                 )
-        finally:
             self.callback = None
 
     def __call__(self, ID):
