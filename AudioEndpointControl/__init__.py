@@ -53,6 +53,7 @@ def _GetValue(value):
 class AudioVolume(object):
     """Wrapper for volume related methods."""
     def __init__(self, endpoint, IAudioEndpointVolume, EventContext=None):
+        self.callback = None
         self.endpoint = endpoint
         self.IAudioEndpointVolume = IAudioEndpointVolume
         self.EventContext = EventContext
@@ -148,16 +149,12 @@ class AudioVolume(object):
 
     def RegisterControlChangeNotify(self, callback):
         """Registers a client's notification callback interface."""
-        self.Callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
+        self.callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
         hr = self.IAudioEndpointVolume.RegisterControlChangeNotify(
-            self.Callback
+            self.callback
         )
         if hr:
-            print(
-                'RegisterControlChangeNotify',
-                hr,
-                FormatMessage(hr)
-            )
+            print('RegisterControlChangeNotify', hr, FormatMessage(hr))
 
     def UnregisterControlChangeNotify(self):
         """
@@ -165,19 +162,15 @@ class AudioVolume(object):
         """
         try:
             hr = self.IAudioEndpointVolume.UnregisterControlChangeNotify(
-                self.Callback
+                self.callback
             )
         except AttributeError:
             pass
         else:
             if hr:
-                print(
-                    'UnregisterControlChangeNotify',
-                    hr,
-                    FormatMessage(hr)
-                )
+                print('UnregisterControlChangeNotify', hr, FormatMessage(hr))
         finally:
-            self.Callback = None
+            self.callback = None
 
     def __add__(self, other=1):
         for _ in range(other):
