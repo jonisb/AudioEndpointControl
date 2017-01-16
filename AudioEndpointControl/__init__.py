@@ -208,7 +208,6 @@ class AudioVolume(object):
     __neg__ = __add__
 
 
-# This is a wrapper for a single COM endpoint.
 class AudioEndpoint(object):
     """Wrapper for a single COM endpoint."""
     def __init__(
