@@ -27,6 +27,7 @@ except ImportError:
         IMMDeviceEnumerator as _IMMDeviceEnumerator,
         IMMNotificationClient
     )
+from .MMConstants import Render, Capture, All, Console, Multimedia, Communications
 from .MMConstants import *
 from .EndpointvolumeAPI import *
 from .PolicyConfigAPI import *
@@ -279,7 +280,7 @@ class AudioEndpoint(object):
         """Gets the current state of the device."""
         return self.endpoint.GetState()
 
-    def isDefault(self, role=eConsole, dataFlow=eRender):
+    def isDefault(self, role=Console, dataFlow=Render):
         """Return if endpoint device is default or not."""
         return self == self.endpoints.GetDefault(role, dataFlow)
 
@@ -402,7 +403,7 @@ class AudioEndpoints(object):
         )
         self.pPolicyConfig = None
 
-    def GetDefault(self, role=eConsole, dataFlow=eRender):
+    def GetDefault(self, role=Console, dataFlow=Render):
         return AudioEndpoint(
             self.pDevEnum.GetDefaultAudioEndpoint(dataFlow, role),
             self,
@@ -474,7 +475,7 @@ class AudioEndpoints(object):
         if PKEY_Device is not None:
             self.PKEY_Device = PKEY_Device
 
-    def __iter__(self, dataFlow=eRender):
+    def __iter__(self, dataFlow=Render):
         pEndpoints = self.pDevEnum.EnumAudioEndpoints(
             dataFlow, self.DEVICE_STATE
         )
@@ -484,6 +485,6 @@ class AudioEndpoints(object):
     def __len__(self):
         return int(
             self.pDevEnum.EnumAudioEndpoints(
-                eRender, self.DEVICE_STATE
+                Render, self.DEVICE_STATE
             ).GetCount()
         )

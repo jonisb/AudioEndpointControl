@@ -35,64 +35,60 @@ except ImportError:
 PROPERTYKEY = _tagpropertykey
 
 
-class _ValueWrapperClass(object):
+class _ValueTypeClass(object):
     def __init__(self, value):
         self._value = value
+
+    def __str__(self):
+        return self._valueMap[self._value]
 
     def __int__(self):
         return self._value
 
 
-# EDataFlow enumeration: The EDataFlow enumeration defines constants that
-# indicate the direction in which audio data flows between an audio endpoint
-# device and an application.
-EDataFlow = {
-    eRender: 'eRender',
-    eCapture: 'eCapture',
-    eAll: 'eAll',
-    EDataFlow_enum_count: 'EDataFlow_enum_count'
-}
+# DataFlow enumeration: The DataFlowType class defines constants that indicate the
+# direction in which audio data flows between an audio endpoint device and an
+# application.
+class DataFlowType(_ValueTypeClass):
+    _valueMap = {
+        eRender: 'Render',
+        eCapture: 'Capture',
+        eAll: 'All',
+        EDataFlow_enum_count: 'DataFlow_enum_count'
+    }
 
 
-class EDataFlowWrapper(_ValueWrapperClass):
-    def __str__(self):
-        return EDataFlow[self._value]
+for _dataflow, _name in DataFlowType._valueMap.iteritems():
+    globals()[_name] = DataFlowType(_dataflow)
+
+# Role enumeration: The RoleType class defines constants that indicate the role
+# that the system has assigned to an audio endpoint device.
+class RoleType(_ValueTypeClass):
+    _valueMap = {
+        eConsole: 'Console',
+        eMultimedia: 'Multimedia',
+        eCommunications: 'Communications',
+        ERole_enum_count: 'Role_enum_count'
+    }
 
 
-# ERole enumeration: The ERole enumeration defines constants that indicate
-# the role that the system has assigned to an audio endpoint device.
-ERole = {
-    eConsole: 'eConsole',
-    eMultimedia: 'eMultimedia',
-    eCommunications: 'eCommunications',
-    ERole_enum_count: 'ERole_enum_count'
-}
-
-
-class ERoleWrapper(_ValueWrapperClass):
-    def __str__(self):
-        return ERole[self._value]
-
+for _role, _name in RoleType._valueMap.iteritems():
+    globals()[_name] = DataFlowType(_role)
 
 # DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the
 # current state of an audio endpoint device.
-DEVICE_STATE_ACTIVE = 0x00000001
-DEVICE_STATE_DISABLED = 0x00000002
-DEVICE_STATE_NOTPRESENT = 0x00000004
-DEVICE_STATE_UNPLUGGED = 0x00000008
-DEVICE_STATEMASK_ALL = 0x0000000F
-DEVICE_STATE = {
-    DEVICE_STATE_ACTIVE: 'DEVICE_STATE_ACTIVE',
-    DEVICE_STATE_DISABLED: 'DEVICE_STATE_DISABLED',
-    DEVICE_STATE_NOTPRESENT: 'DEVICE_STATE_NOTPRESENT',
-    DEVICE_STATE_UNPLUGGED: 'DEVICE_STATE_UNPLUGGED',
-    DEVICE_STATEMASK_ALL: 'DEVICE_STATEMASK_ALL'
-}
+class Device_StateType(_ValueTypeClass):
+    _valueMap = {
+        0x00000001: 'DEVICE_STATE_ACTIVE',
+        0x00000002: 'DEVICE_STATE_DISABLED',
+        0x00000004: 'DEVICE_STATE_NOTPRESENT',
+        0x00000008: 'DEVICE_STATE_UNPLUGGED',
+        0x0000000F: 'DEVICE_STATEMASK_ALL'
+    }
 
 
-class Device_StateWrapper(_ValueWrapperClass):
-    def __str__(self):
-        return DEVICE_STATE[self._value]
+for _device_state, _name in Device_StateType._valueMap.iteritems():
+    globals()[_name] = DataFlowType(_device_state)
 
 
 # The STGM constants are flags that indicate conditions for creating and

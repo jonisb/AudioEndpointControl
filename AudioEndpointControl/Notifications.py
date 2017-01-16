@@ -7,7 +7,7 @@ from . import (
     IMMNotificationClient,
     IAudioEndpointVolumeCallback
 )
-from . import EDataFlowWrapper, ERoleWrapper, Device_StateWrapper
+from . import DataFlowType, RoleType, Device_StateType
 import sys
 import traceback
 
@@ -55,7 +55,7 @@ class CMMNotificationClient(_COMObject):
         try:
             self._Callback.OnDeviceStateChanged(
                 self._AudioDevices(pwstrDeviceId),
-                Device_StateWrapper(dwNewState)
+                Device_StateType(dwNewState)
             )
         except AttributeError:
             pass
@@ -81,8 +81,8 @@ class CMMNotificationClient(_COMObject):
     def OnDefaultDeviceChanged(self, this, flow, role, pwstrDeviceId):
         try:
             self._Callback.OnDefaultDeviceChanged(
-                EDataFlowWrapper(flow),
-                ERoleWrapper(role),
+                DataFlowType(flow),
+                RoleType(role),
                 self._AudioDevices(pwstrDeviceId)
             )
         except AttributeError:

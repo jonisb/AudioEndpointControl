@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
 import AudioEndpointControl
-# EDataFlow enumeration: The EDataFlow enumeration defines constants that indicate the direction in which audio data flows between an audio endpoint device and an application.
-from AudioEndpointControl import eRender, eCapture, eAll
-# ERole enumeration: The ERole enumeration defines constants that indicate the role that the system has assigned to an audio endpoint device.
-from AudioEndpointControl import eConsole, eMultimedia, eCommunications
+# DataFlow enumeration: The DataFlow enumeration defines constants that indicate the direction in which audio data flows between an audio endpoint device and an application.
+from AudioEndpointControl import Render, Capture, All
+# Role enumeration: The Role enumeration defines constants that indicate the role that the system has assigned to an audio endpoint device.
+from AudioEndpointControl import Console, Multimedia, Communications
 # DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the current state of an audio endpoint device.
 from AudioEndpointControl import DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL
 # Each PKEY_Xxx property identifier in the following list is a constant of type PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h.
@@ -55,10 +55,10 @@ if __name__ == '__main__':
     print("Using str() or print on a AudioEndpoint or AudioEndpoints object results in the text name of the endpoint.\n")
     print("Number of active audio endpoints: {0}".format(len(AudioDevices)))
     print("Get a list of audio endpoints:", AudioDevices)
-    print("Get default endpoint for eConsole, eRender (default):", AudioDevices.GetDefault())
-    print("Get default endpoint for eConsole, eCapture:", AudioDevices.GetDefault(eConsole, eCapture))
-    print("Get default endpoint for eMultimedia:", AudioDevices.GetDefault(eMultimedia))
-    print("Get default endpoint for eCommunications:", AudioDevices.GetDefault(eCommunications))
+    print("Get default endpoint for Console, Render (default):", AudioDevices.GetDefault())
+    print("Get default endpoint for Console, Capture:", AudioDevices.GetDefault(Console, Capture))
+    print("Get default endpoint for Multimedia:", AudioDevices.GetDefault(Multimedia))
+    print("Get default endpoint for Communications:", AudioDevices.GetDefault(Communications))
 
     print("\nAudioEndpoints supports iteration so can be used in for and while loops:")
     for endpoint in AudioDevices:
