@@ -38,8 +38,8 @@ _CLSID_MMDeviceEnumerator = _MMDeviceEnumerator._reg_clsid_
 
 
 def _GetValue(value):
-    #Need to do this in a function as comtypes seems to
-    #have a problem if it's in a class.
+    # Need to do this in a function as comtypes seems to
+    # have a problem if it's in a class.
 
     # Types for vt defined here:
     # https://msdn.microsoft.com/en-us/library/windows/desktop/aa380072%28v=vs.85%29.aspx
