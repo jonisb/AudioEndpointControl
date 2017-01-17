@@ -30,7 +30,7 @@ except ImportError:
         IMMNotificationClient
     )
 from .Notifications import CAudioEndpointVolumeCallback, CMMNotificationClient
-from .EndpointvolumeAPI import IAudioEndpointVolume, IID_IAudioEndpointVolume
+from .EndpointvolumeAPI import IAudioEndpointVolume as _IAudioEndpointVolume, IID_IAudioEndpointVolume
 from .PolicyConfigAPI import CLSID_CPolicyConfigVistaClient, IPolicyConfigVista
 
 __version__ = '0.1a2'
@@ -53,7 +53,6 @@ def _GetValue(value):
 
 class AudioVolume(object):
     """Wrapper for volume related methods."""
-    # FIX: Redefining name 'IAudioEndpointVolume' from outer scope (line 32)
     def __init__(self, endpoint, IAudioEndpointVolume, EventContext=None):
         self.callback = None
         self.endpoint = endpoint
@@ -221,7 +220,7 @@ class AudioEndpoint(object):
         self.endpoints = endpoints
         self.PKEY_Device = PKEY_Device
         self.EventContext = EventContext
-        self.IAudioEndpointVolume = _POINTER(IAudioEndpointVolume)(
+        self.IAudioEndpointVolume = _POINTER(_IAudioEndpointVolume)(
             endpoint.Activate(
                 IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None
             )
