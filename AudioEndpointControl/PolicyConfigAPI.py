@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# TODO: Missing module docstring (missing-docstring)
 
 from ctypes import HRESULT as _HRESULT
 from ctypes.wintypes import (
@@ -18,6 +19,7 @@ CLSID_CPolicyConfigVistaClient = _GUID(
 IID_IPolicyConfigVista = _GUID('{568b9108-44bf-40b4-9006-86afe5b5a620}')
 
 
+# TODO: Missing class docstring (missing-docstring)
 class IPolicyConfigVista(_IUnknown):
     _iid_ = IID_IPolicyConfigVista
     _methods_ = (

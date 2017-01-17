@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# TODO: Missing module docstring (missing-docstring)
 
 from __future__ import print_function, unicode_literals, absolute_import
 
@@ -13,7 +14,8 @@ from .MMConstants import DataFlowType, RoleType, Device_StateType
 from .EndpointvolumeAPI import IAudioEndpointVolumeCallback
 
 
-class cNotify(object):
+class cNotify(object):  # TODO: Missing class docstring (missing-docstring)
+    # FIX: Too few public methods (0/2) (too-few-public-methods)
     def __init__(self, pNotify):
         self.EventContext = pNotify.contents.guidEventContext
         self.Muted = bool(pNotify.contents.bMuted)
@@ -27,6 +29,7 @@ class cNotify(object):
             self.ChannelVolumes.append(pfChannelVolumes[channel])
 
 
+# TODO: Missing class docstring (missing-docstring)
 class CAudioEndpointVolumeCallback(_COMObject):
     _com_interfaces_ = [IAudioEndpointVolumeCallback]
 
@@ -35,14 +38,14 @@ class CAudioEndpointVolumeCallback(_COMObject):
         self._endpoint = endpoint
         _COMObject.__init__(self)
 
-    def OnNotify(self, this, pNotify):
+    def OnNotify(self, this, pNotify):  # TODO: Missing method docstring
         try:
             self._Callback.OnNotify(cNotify(pNotify), self._endpoint)
-        except:
+        except:  # FIX: No exception type(s) specified (bare-except)
             traceback.print_exc(file=sys.stdout)
 
 
-class CMMNotificationClient(_COMObject):
+class CMMNotificationClient(_COMObject):  # TODO: Missing class docstring
     _com_interfaces_ = [IMMNotificationClient]
 
     def __init__(self, Callback, endpoints):
@@ -51,6 +54,7 @@ class CMMNotificationClient(_COMObject):
         _COMObject.__init__(self)
 
     def OnDeviceStateChanged(self, this, pwstrDeviceId, dwNewState):
+        # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnDeviceStateChanged(
                 self._AudioDevices(pwstrDeviceId),
@@ -58,26 +62,29 @@ class CMMNotificationClient(_COMObject):
             )
         except AttributeError:
             pass
-        except:
+        except:  # FIX: No exception type(s) specified (bare-except)
             traceback.print_exc(file=sys.stdout)
 
     def OnDeviceRemoved(self, this, pwstrDeviceId):
+        # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnDeviceRemoved(self._AudioDevices(pwstrDeviceId))
         except AttributeError:
             pass
-        except:
+        except:  # FIX: No exception type(s) specified (bare-except)
             traceback.print_exc(file=sys.stdout)
 
     def OnDeviceAdded(self, this, pwstrDeviceId):
+        # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnDeviceAdded(self._AudioDevices(pwstrDeviceId))
         except AttributeError:
             pass
-        except:
+        except:  # FIX: No exception type(s) specified (bare-except)
             traceback.print_exc(file=sys.stdout)
 
     def OnDefaultDeviceChanged(self, this, flow, role, pwstrDeviceId):
+        # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnDefaultDeviceChanged(
                 DataFlowType(flow),
@@ -86,10 +93,11 @@ class CMMNotificationClient(_COMObject):
             )
         except AttributeError:
             pass
-        except:
+        except:  # FIX: No exception type(s) specified (bare-except)
             traceback.print_exc(file=sys.stdout)
 
     def OnPropertyValueChanged(self, this, pwstrDeviceId, key):
+        # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnPropertyValueChanged(
                 self._AudioDevices(pwstrDeviceId),
@@ -97,5 +105,5 @@ class CMMNotificationClient(_COMObject):
             )
         except AttributeError:
             pass
-        except:
+        except:  # FIX: No exception type(s) specified (bare-except)
             traceback.print_exc(file=sys.stdout)

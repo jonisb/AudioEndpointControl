@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# TODO: Missing module docstring (missing-docstring)
 
 from __future__ import print_function, unicode_literals, absolute_import
 
@@ -21,6 +22,7 @@ from comtypes import (
 
 
 class AUDIO_VOLUME_NOTIFICATION_DATA(Structure):
+    # TODO: Missing class docstring (missing-docstring)
     pass
 
 
@@ -39,6 +41,7 @@ IID_IAudioEndpointVolumeCallback = _GUID(
 
 
 class IAudioEndpointVolumeCallback(_IUnknown):
+    # TODO: Missing class docstring (missing-docstring)
     _iid_ = IID_IAudioEndpointVolumeCallback
     _methods_ = [
         _COMMETHOD(
@@ -54,6 +57,7 @@ IID_IAudioEndpointVolume = _GUID('{5CDF2C82-841E-4546-9722-0CF74078229A}')
 
 
 class IAudioEndpointVolume(_IUnknown):
+    # TODO: Missing class docstring (missing-docstring)
     _iid_ = _GUID('{5CDF2C82-841E-4546-9722-0CF74078229A}')
     _methods_ = [
         _COMMETHOD(
