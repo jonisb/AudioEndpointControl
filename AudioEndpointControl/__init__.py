@@ -67,7 +67,7 @@ class AudioVolume(object):
     def __len__(self):
         return self.GetChannelCount()
 
-    def Get(self, nChannel=0, Scalar=True):
+    def Get(self, Channel=0, Scalar=True):
         """
         When Scalar=True: Gets the master volume level, expressed as
         (default)         a normalized, audio-tapered value.
@@ -81,7 +81,7 @@ class AudioVolume(object):
         When Scalar=False: Gets the volume level, in decibels, of the
                            specified channel in the audio stream.
         """
-        if nChannel == 0:
+        if Channel == 0:
             if Scalar:
                 return self.IAudioEndpointVolume.GetMasterVolumeLevelScalar()
             else:
@@ -89,12 +89,12 @@ class AudioVolume(object):
 
         if Scalar:
             return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(
-                nChannel
+                Channel-1
             )
 
-        return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
+        return self.IAudioEndpointVolume.GetChannelVolumeLevel(Channel-1)
 
-    def Set(self, fLevelDB, nChannel=0, Scalar=True):
+    def Set(self, LevelDB, Channel=0, Scalar=True):
         """
         When Scalar=True: Sets the master volume level, expressed as
         (default)         a normalized, audio-tapered value.
@@ -109,23 +109,22 @@ class AudioVolume(object):
                            specified channel of the audio stream.
 
         """
-        if type(fLevelDB) == bool:
-            return self.Mute(fLevelDB)
-
-        if nChannel == 0:
+        if isinstance(LevelDB, bool):
+            self.IAudioEndpointVolume.SetMute(LevelDB, self.EventContext)
+        elif Channel == 0:
             if Scalar:
-                return self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(
-                    fLevelDB, self.EventContext)
+                self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(
+                    LevelDB, self.EventContext)
             else:
-                return self.IAudioEndpointVolume.SetMasterVolumeLevel(
-                    fLevelDB, self.EventContext)
-
-        if Scalar:
-            return self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(
-                nChannel-1, fLevelDB, self.EventContext)
-
-        return self.IAudioEndpointVolume.SetChannelVolumeLevel(
-            nChannel-1, fLevelDB, self.EventContext)
+                self.IAudioEndpointVolume.SetMasterVolumeLevel(
+                    LevelDB, self.EventContext)
+        else:
+            if Scalar:
+                self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(
+                    Channel-1, LevelDB, self.EventContext)
+            else:
+                self.IAudioEndpointVolume.SetChannelVolumeLevel(
+                    Channel-1, LevelDB, self.EventContext)
 
     def GetRange(self):
         """Gets the volume range of the audio stream, in decibels."""
@@ -179,6 +178,9 @@ class AudioVolume(object):
             self.StepDown()
 
     def __int__(self):
+        return int(self.GetChannelCount())
+
+    def __float__(self):
         return self[0]
 
     def __str__(self):
@@ -190,7 +192,7 @@ class AudioVolume(object):
 
     @Mute.setter
     def Mute(self, bMute):
-        return self.IAudioEndpointVolume.SetMute(bMute, self.EventContext)
+        self.Set(bMute)
 
     def __eq__(self, other):
         """Tests if two enpoint devices are the same."""
@@ -241,13 +243,8 @@ class AudioEndpoint(object):
         return self._AudioVolume
 
     @volume.setter
-    # FIX: Using type() instead of isinstance() for a typecheck.
-    def volume(self, fLevelDB):
-        if type(fLevelDB) == bool:
-            return self._AudioVolume.SetMute(fLevelDB)
-            # FIX: Instance of 'AudioVolume' has no 'SetMute' member
-
-        return self._AudioVolume.Set(fLevelDB)
+    def volume(self, LevelDB):
+        return self._AudioVolume.Set(LevelDB)
 
     def getName(self):
         """Return an endpoint devices FriendlyName."""
