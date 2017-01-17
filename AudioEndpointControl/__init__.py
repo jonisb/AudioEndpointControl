@@ -190,17 +190,15 @@ class AudioVolume(object):
 
     @Mute.setter
     def Mute(self, bMute):
-        return self.IAudioEndpointVolume.SetMute(bMute, None)
+        return self.IAudioEndpointVolume.SetMute(bMute, self.EventContext)
 
     def __eq__(self, other):
         """Tests if two enpoint devices are the same."""
-        return self.getId() == other.getId()
-        # FIX: Instance of 'AudioVolume' has no 'getId' member (no-member)
+        return self.endpoint.getId() == other.endpoint.getId()
 
     def __ne__(self, other):
         """Tests if two enpoint devices are not the same."""
-        return self.getId() != other.getId()
-        # FIX: Instance of 'AudioVolume' has no 'getId' member (no-member)
+        return self.endpoint.getId() != other.endpoint.getId()
 
     __getitem__ = Get
     __setitem__ = _partial(Set, Scalar=True)
