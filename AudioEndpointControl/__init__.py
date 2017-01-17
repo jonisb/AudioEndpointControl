@@ -334,8 +334,7 @@ class AudioEndpoint(object):
 
     def GetMute(self):
         """Gets the muting state of the audio stream."""
-        return self._AudioVolume.Mute()
-        # FIX: self._AudioVolume.Mute is not callable (not-callable)
+        return self._AudioVolume.Mute
 
     def SetMute(self, bMute):
         """Sets the muting state of the audio stream."""
