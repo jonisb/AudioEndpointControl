@@ -138,3 +138,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 .pylintrc
+AudioEndpointControl/.pylint_spelling-private-dict-file.lst
