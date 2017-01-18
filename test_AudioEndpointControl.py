@@ -38,6 +38,9 @@ class TestAudioEndpoints(unittest.TestCase):
     def test_GetDefault(self):
         self.assertEqual(type(self.AudioDevices.GetDefault()), self.AudioEndpointControl.AudioEndpoint)
 
+    def test_SetDefault(self):
+        self.assertEqual(type(self.AudioDevices.SetDefault(self.AudioDevices.GetDefault())), self.AudioEndpointControl.AudioEndpoint)
+
     def test_Methods(self):
         self.assertEqual(type(str(self.AudioDevices)), str)
         self.assertEqual(type(len(self.AudioDevices)), int)
