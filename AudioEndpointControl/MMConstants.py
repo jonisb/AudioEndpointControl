@@ -116,3 +116,25 @@ PKEY_Device_DeviceDesc = PROPERTYKEY(
     _GUID('{A45C254E-DF1C-4EFD-8020-67D146A850E0}'), 2)
 PKEY_DeviceInterface_FriendlyName = PROPERTYKEY(
     _GUID('{026E516E-B814-414B-83CD-856D6FEF4822}'), 2)
+
+
+# ENDPOINT_HARDWARE_SUPPORT_XXX Constants
+#
+# The ENDPOINT_HARDWARE_SUPPORT_XXX constants are hardware support flags for an
+# audio endpoint device.
+#
+# Remarks
+#
+# The IAudioEndpointVolume::QueryHardwareSupport and
+# IAudioMeterInformation::QueryHardwareSupport methods use the
+# ENDPOINT_HARDWARE_SUPPORT_XXX constants.
+#
+# A hardware support mask indicates which functions an audio endpoint device
+# implements in hardware. The mask can be either 0 or the bitwise-OR
+# combination of one or more ENDPOINT_HARDWARE_SUPPORT_XXX constants. If a bit
+# that corresponds to a particular ENDPOINT_HARDWARE_SUPPORT_XXX constant is
+# set in the mask, then the meaning is that the function represented by that
+# constant is implemented in hardware by the device.
+ENDPOINT_HARDWARE_SUPPORT_VOLUME = 0x00000001  # The audio endpoint device supports a hardware volume control.
+ENDPOINT_HARDWARE_SUPPORT_MUTE = 0x00000002  # The audio endpoint device supports a hardware mute control.
+ENDPOINT_HARDWARE_SUPPORT_METER = 0x00000004  # The audio endpoint device supports a hardware peak meter.
