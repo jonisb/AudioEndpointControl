@@ -473,7 +473,7 @@ class AudioEndpoints(object):
                 self.EventContext
             )
 
-    # FIX: __len__ does not return non-negative integer
+    # pylint: disable=invalid-length-returned
     def __len__(self):
         return int(
             self.pDevEnum.EnumAudioEndpoints(
