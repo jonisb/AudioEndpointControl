@@ -6,15 +6,15 @@ from __future__ import print_function, unicode_literals, absolute_import
 from ctypes import POINTER as _POINTER
 from functools import partial as _partial
 from _ctypes import COMError
-from win32api import FormatMessage
+from win32api import FormatMessage  # pylint: disable=no-name-in-module
 
 from comtypes import CoCreateInstance, CLSCTX_INPROC_SERVER, CLSCTX_ALL, GUID
 
-from .MMConstants import (
+from .MMConstants import (  # pylint: disable=no-name-in-module
     Render, Console, DEVICE_STATE_ACTIVE, PKEY_Device_FriendlyName, STGM_READ
 )
 try:
-    # Try to import local .MMDeviceAPILib for Python 2.6 compability
+    # Try to import local .MMDeviceAPILib for Python 2.6 compatibility
     from .MMDeviceAPILib import (
         MMDeviceEnumerator as _MMDeviceEnumerator,
         IMMDeviceEnumerator as _IMMDeviceEnumerator,
@@ -195,19 +195,19 @@ class AudioVolume(object):
         self.Set(bMute)
 
     def __eq__(self, other):
-        """Tests if two enpoint devices are the same."""
+        """Tests if two endpoint devices are the same."""
         return self.endpoint.getId() == other.endpoint.getId()
 
     def __ne__(self, other):
-        """Tests if two enpoint devices are not the same."""
+        """Tests if two endpoint devices are not the same."""
         return self.endpoint.getId() != other.endpoint.getId()
 
     def __ge__(self, other):
-        """Tests if two enpoint devices are not the same."""  # FIX:
+        """Tests if two endpoint devices are not the same."""  # FIX:
         return float(self) >= float(other)
 
     def __le__(self, other):
-        """Tests if two enpoint devices are not the same."""  # FIX:
+        """Tests if two endpoint devices are not the same."""  # FIX:
         return float(self) <= float(other)
 
     __getitem__ = Get
@@ -216,7 +216,7 @@ class AudioVolume(object):
     __neg__ = __sub__
 
 
-# FIX: Too many instance attributes (8/7) (too-many-instance-attributes)
+# FIXME: Too many instance attributes (8/7) (too-many-instance-attributes)
 class AudioEndpoint(object):
     """Wrapper for a single COM endpoint."""
     def __init__(
@@ -362,11 +362,11 @@ class AudioEndpoint(object):
         return self.IAudioEndpointVolume.GetVolumeStepInfo()
 
     def __eq__(self, other):
-        """Tests if two enpoint devices are the same."""
+        """Tests if two endpoint devices are the same."""
         return self.getId() == other.getId()
 
     def __ne__(self, other):
-        """Tests if two enpoint devices are not the same."""
+        """Tests if two endpoint devices are not the same."""
         return self.getId() != other.getId()
 
     __str__ = getName
