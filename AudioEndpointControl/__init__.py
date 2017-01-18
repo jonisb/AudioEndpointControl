@@ -287,6 +287,8 @@ class AudioEndpoint(object):
         """Tests if two endpoint devices are not the same."""
         return self.getId() != other.getId()
 
+    __str__ = getName
+
 
 # TODO: Missing class docstring (missing-docstring)
 class AudioEndpoints(object):
