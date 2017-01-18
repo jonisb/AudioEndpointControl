@@ -371,6 +371,8 @@ class AudioEndpoints(object):
             for endpoint in self:
                 if endpoint.getName() == ID:
                     return endpoint
+            else:
+                raise
 
     def __str__(self):
         return str([str(endpoint) for endpoint in self])
