@@ -310,7 +310,7 @@ class AudioEndpoints(object):
             CLSCTX_INPROC_SERVER
         )
         self.callback = None
-        self.pPolicyConfig = None
+        self._PolicyConfig = None
 
     # TODO: Missing class docstring (missing-docstring)
     def GetDefault(self, role=Console, dataFlow=Render):
@@ -325,11 +325,11 @@ class AudioEndpoints(object):
     def SetDefault(self, endpoint, role=Console):
         OldDefault = self.GetDefault(role)
 
-        if not self.pPolicyConfig:
-            self.pPolicyConfig = CoCreateInstance(
+        if self._PolicyConfig is None:
+            self._PolicyConfig = CoCreateInstance(
                 CLSID_CPolicyConfigVistaClient, IPolicyConfigVista, CLSCTX_ALL)
 
-        hr = self.pPolicyConfig.SetDefaultEndpoint(endpoint.getId(), role)
+        hr = self._PolicyConfig.SetDefaultEndpoint(endpoint.getId(), role)
         if hr:
             print('SetDefaultEndpoint', FormatMessage(hr))
         return OldDefault
