@@ -121,13 +121,25 @@ class TestAudioVolume(unittest.TestCase):
         self.assertEqual(type(float(self.AudioDevice.volume)), float)
         self.assertEqual(type(int(self.AudioDevice.volume)), int)
 
-
         SaveOld = self.AudioDevice.volume.Get()
         +self.AudioDevice.volume
         self.assertGreaterEqual(self.AudioDevice.volume, SaveOld)
         -self.AudioDevice.volume
         self.assertLessEqual(float(self.AudioDevice.volume), SaveOld)
         self.AudioDevice.volume = SaveOld
+
+        self.assertEqual(type(self.AudioDevice.volume.GetRange()), tuple)
+        self.assertEqual(len(self.AudioDevice.volume.GetRange()), 3)
+        for value in self.AudioDevice.volume.GetRange():
+            self.assertEqual(type(value), float)
+
+        self.assertEqual(type(self.AudioDevice.volume.GetStepInfo()), tuple)
+        self.assertEqual(len(self.AudioDevice.volume.GetStepInfo()), 2)
+        for value in self.AudioDevice.volume.GetStepInfo():
+            self.assertEqual(type(value), long)
+
+        print(self.AudioDevice.volume.QueryHardwareSupport(), type(self.AudioDevice.volume.QueryHardwareSupport()))
+
 #        self.assertAlmostEqual(self.AudioDevice.volume.Get(Channel=0), SaveOld )
 #
 #
@@ -136,13 +148,6 @@ class TestAudioVolume(unittest.TestCase):
 #        self.AudioDevice.volume.Set(SaveOld)
 #        self.assertEqual(self.AudioDevice.volume.Get(Channel=0), SaveOld)
 
-        #print(AudioDevice.volume.QueryHardwareSupport())
-        #print(AudioDevice.volume.GetStepInfo())
-        #print(AudioDevice.volume.GetRange())
-#        __pos__ = __add__
-#        __neg__ = __add__
-#        def StepDown(self):
-#        def StepUp(self):
 #        def QueryHardwareSupport(self):
 #        def RegisterControlChangeNotify(self, callback):
 #        def UnregisterControlChangeNotify(self):
