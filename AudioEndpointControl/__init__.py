@@ -202,10 +202,18 @@ class AudioVolume(object):
         """Tests if two enpoint devices are not the same."""
         return self.endpoint.getId() != other.endpoint.getId()
 
+    def __ge__(self, other):
+        """Tests if two enpoint devices are not the same."""  # FIX:
+        return float(self) >= float(other)
+
+    def __le__(self, other):
+        """Tests if two enpoint devices are not the same."""  # FIX:
+        return float(self) <= float(other)
+
     __getitem__ = Get
     __setitem__ = _partial(Set, Scalar=True)
     __pos__ = __add__
-    __neg__ = __add__
+    __neg__ = __sub__
 
 
 # FIX: Too many instance attributes (8/7) (too-many-instance-attributes)
