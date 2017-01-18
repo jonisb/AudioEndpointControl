@@ -271,95 +271,13 @@ class AudioEndpoint(object):
         """Return if endpoint device is default or not."""
         return self == self.endpoints.GetDefault(role, dataFlow)
 
-    def GetVolumeRange(self):
-        """Gets the volume range of the audio stream, in decibels."""
-        return self.IAudioEndpointVolume.GetVolumeRange()
-
-    def GetMasterVolumeLevel(self, Scalar=True):
-        """
-        When Scalar=True: Gets the master volume level, expressed as
-        (default)         a normalized, audio-tapered value.
-
-        When Scalar=False: Gets the master volume level of the
-                           audio stream, in decibels.
-        """
-        if Scalar:
-            return self.IAudioEndpointVolume.GetMasterVolumeLevelScalar()
-
-        return self.IAudioEndpointVolume.GetMasterVolumeLevel()
-
-    def SetMasterVolumeLevel(self, fLevelDB, Scalar=True):
-        """
-        When Scalar=True: Sets the master volume level, expressed as
-        (default)         a normalized, audio-tapered value.
-
-        When Scalar=False: Sets the master volume level of the
-                           audio stream, in decibels.
-        """
-        if Scalar:
-            return self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(
-                fLevelDB, self.EventContext
-            )
-
-        return self.IAudioEndpointVolume.SetMasterVolumeLevel(
-            fLevelDB, self.EventContext
-        )
-
-    def GetChannelVolumeLevel(self, nChannel, Scalar=True):
-        """
-        When Scalar=True: Gets the normalized, audio-tapered volume level
-        (default)         of the specified channel of the audio stream.
-
-        When Scalar=False: Gets the volume level, in decibels, of the
-                           specified channel in the audio stream.
-        """
-        if Scalar:
-            return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(
-                nChannel
-            )
-
-        return self.IAudioEndpointVolume.GetChannelVolumeLevel(nChannel)
-
-    def SetChannelVolumeLevel(self, nChannel, fLevelDB, Scalar=True):
-        """
-        When Scalar=True: Sets the normalized, audio-tapered volume level
-        (default)         of the specified channel in the audio stream.
-
-        When Scalar=False: Sets the volume level, in decibels, of the
-                           specified channel of the audio stream.
-        """
-        if Scalar:
-            return self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(
-                nChannel, fLevelDB, self.EventContext
-            )
-
-        return self.IAudioEndpointVolume.SetChannelVolumeLevel(
-            nChannel, fLevelDB, self.EventContext
-        )
-
     def GetMute(self):
         """Gets the muting state of the audio stream."""
         return self._AudioVolume.Mute
 
-    def SetMute(self, bMute):
+    def SetMute(self, Mute):
         """Sets the muting state of the audio stream."""
-        return self.IAudioEndpointVolume.SetMute(bMute, self.EventContext)
-
-    def GetChannelCount(self):
-        """Gets a count of the channels in the audio stream."""
-        return len(self._AudioVolume)
-
-    def VolumeStepDown(self):
-        """Decreases the volume level by one step."""
-        return self.IAudioEndpointVolume.VolumeStepDown(self.EventContext)
-
-    def VolumeStepUp(self):
-        """Increases the volume level by one step."""
-        return self.IAudioEndpointVolume.VolumeStepUp(self.EventContext)
-
-    def GetVolumeStepInfo(self):
-        """Gets information about the current step in the volume range."""
-        return self.IAudioEndpointVolume.GetVolumeStepInfo()
+        self._AudioVolume.Mute = Mute
 
     def __eq__(self, other):
         """Tests if two endpoint devices are the same."""
