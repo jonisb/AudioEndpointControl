@@ -39,7 +39,25 @@ class TestAudioEndpoints(unittest.TestCase):
         self.assertEqual(type(self.AudioDevices.GetDefault()), self.AudioEndpointControl.AudioEndpoint)
 
     def test_Methods(self):
+        self.assertEqual(type(str(self.AudioDevices)), str)
         self.assertEqual(type(len(self.AudioDevices)), int)
+        self.assertEqual(type(self.AudioDevices(self.AudioDevices.GetDefault().getId())), self.AudioEndpointControl.AudioEndpoint)
+        self.assertEqual(type(self.AudioDevices(self.AudioDevices.GetDefault().getName())), self.AudioEndpointControl.AudioEndpoint)
+
+        from _ctypes import COMError
+        with self.assertRaises(COMError):
+            self.AudioDevices("Wrong number")
+
+        # TODO: test methods after changing these settings
+        from AudioEndpointControl.MMConstants import DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL
+        for state in (DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL):
+            self.AudioDevices.ChangeFilter(DEVICE_STATE=state)
+            self.assertEqual(self.AudioDevices.DEVICE_STATE, state)
+
+        from AudioEndpointControl.MMConstants import PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName
+        for pkey in (PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName):
+            self.AudioDevices.ChangeFilter(PKEY_Device=pkey)
+            self.assertEqual(self.AudioDevices.PKEY_Device, pkey)
 
 
 class TestAudioEndpoint(unittest.TestCase):
@@ -71,21 +89,14 @@ class TestAudioEndpoint(unittest.TestCase):
         self.AudioDevice.volume = SaveOld
         self.assertAlmostEqual(float(self.AudioDevice.volume), SaveOld, places=6)
 
-#def getName(self):
-#def getId(self):
-#def getState(self):
-#def GetVolumeRange(self):
-#def GetMasterVolumeLevel(self, Scalar=True):
-#def GetChannelVolumeLevel(self, nChannel, Scalar=True):
-#def GetMute(self):
-#def GetChannelCount(self):
-#def GetVolumeStepInfo(self):
+        self.assertEqual(type(self.AudioDevice.getName()), unicode)
+        self.assertEqual(type(unicode(self.AudioDevice)), unicode)
+        self.assertEqual(type(str(self.AudioDevice)), str)
+        self.assertEqual(type(self.AudioDevice.getId()), unicode)
+        self.assertEqual(type(self.AudioDevice.getState()), long)
+        self.assertEqual(type(self.AudioDevice.GetMute()), bool)
 #
-#def SetMasterVolumeLevel(self, fLevelDB, Scalar=True):
-#def SetChannelVolumeLevel(self, nChannel, fLevelDB, Scalar=True):
 #def SetMute(self, bMute):
-#def VolumeStepDown(self):
-#def VolumeStepUp(self):
 #def __eq__(self, other):
 #def __ne__(self, other):
 
@@ -142,7 +153,7 @@ class TestAudioVolume(unittest.TestCase):
 
         SaveOld = self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
         self.AudioDevice.volume.Set(SaveOld / 2, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
-        self.assertEqual(self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False), SaveOld / 2)
+        self.assertAlmostEqual(self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False), SaveOld / 2, places=6)
         self.AudioDevice.volume.Set(SaveOld, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
         self.assertEqual(self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False), SaveOld)
 
