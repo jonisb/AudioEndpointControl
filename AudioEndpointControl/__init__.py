@@ -287,7 +287,10 @@ class AudioEndpoint(object):
         """Tests if two endpoint devices are not the same."""
         return self.getId() != other.getId()
 
-    __str__ = getName
+    __unicode__ = getName
+
+    def __str__(self):
+        return str(self.getName())
 
 
 # TODO: Missing class docstring (missing-docstring)
