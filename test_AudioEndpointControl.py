@@ -169,7 +169,8 @@ class TestAudioVolume(unittest.TestCase):
             type(self.AudioDevice.volume.Get(Channel=0, Scalar=True)), float)
         self.assertEqual(
             type(self.AudioDevice.volume.Get(Channel=0, Scalar=False)), float)
-        for channel in xrange(1, self.AudioDevice.volume.GetChannelCount() + 1):
+        for channel in xrange(
+                1, self.AudioDevice.volume.GetChannelCount() + 1):
             self.assertEqual(type(self.AudioDevice.volume.Get(
                 Channel=channel, Scalar=True)), float)
             self.assertEqual(type(self.AudioDevice.volume.Get(
@@ -202,24 +203,47 @@ class TestAudioVolume(unittest.TestCase):
         SaveOld = self.AudioDevice.volume.Get(
             Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True)
         self.AudioDevice.volume.Set(
-            SaveOld / 2, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True)
-        self.assertAlmostEqual(self.AudioDevice.volume.Get(
-            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True), SaveOld / 2, places=6)
+            SaveOld / 2,
+            Channel=self.AudioDevice.volume.GetChannelCount(),
+            Scalar=True)
+        self.assertAlmostEqual(
+            self.AudioDevice.volume.Get(
+                Channel=self.AudioDevice.volume.GetChannelCount(),
+                Scalar=True),
+            SaveOld / 2,
+            places=6)
         self.AudioDevice.volume.Set(
-            SaveOld, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True)
-        self.assertAlmostEqual(self.AudioDevice.volume.Get(
-            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True), SaveOld, places=6)
+            SaveOld,
+            Channel=self.AudioDevice.volume.GetChannelCount(),
+            Scalar=True)
+        self.assertAlmostEqual(
+            self.AudioDevice.volume.Get(
+                Channel=self.AudioDevice.volume.GetChannelCount(),
+                Scalar=True),
+            SaveOld,
+            places=6)
 
         SaveOld = self.AudioDevice.volume.Get(
             Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
         self.AudioDevice.volume.Set(
-            SaveOld / 2, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
-        self.assertAlmostEqual(self.AudioDevice.volume.Get(
-            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False), SaveOld / 2, places=6)
+            SaveOld / 2,
+            Channel=self.AudioDevice.volume.GetChannelCount(),
+            Scalar=False)
+        self.assertAlmostEqual(
+            self.AudioDevice.volume.Get(
+                Channel=self.AudioDevice.volume.GetChannelCount(),
+                Scalar=False),
+            SaveOld / 2,
+            places=6)
         self.AudioDevice.volume.Set(
-            SaveOld, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
-        self.assertEqual(self.AudioDevice.volume.Get(
-            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False), SaveOld)
+            SaveOld,
+            Channel=self.AudioDevice.volume.GetChannelCount(),
+            Scalar=False)
+        self.assertEqual(
+            self.AudioDevice.volume.Get(
+                Channel=self.AudioDevice.volume.GetChannelCount(),
+                Scalar=False),
+            SaveOld)
 
     def test_Methods(self):
         self.assertEqual(type(self.AudioDevice.volume.GetChannelCount()), long)
