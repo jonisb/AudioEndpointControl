@@ -139,3 +139,4 @@ $RECYCLE.BIN/
 *.lnk
 .pylintrc
 AudioEndpointControl/.pylint_spelling-private-dict-file.lst
+.pylint_spelling-private-dict-file.lst
