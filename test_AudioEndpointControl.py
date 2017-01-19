@@ -5,11 +5,20 @@ import unittest
 
 
 class TestConstants(unittest.TestCase):
+
     def test_init(self):
         from AudioEndpointControl.MMConstants import Render, Capture, All
-        from AudioEndpointControl.MMConstants import Console, Multimedia, Communications
-        from AudioEndpointControl.MMConstants import DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL
-        #from AudioEndpointControl.MMConstants import PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName
+        from AudioEndpointControl.MMConstants import (Console, Multimedia,
+                                                      Communications)
+        from AudioEndpointControl.MMConstants import (DEVICE_STATE_ACTIVE,
+                                                      DEVICE_STATE_DISABLED,
+                                                      DEVICE_STATE_NOTPRESENT,
+                                                      DEVICE_STATE_UNPLUGGED,
+                                                      DEVICE_STATEMASK_ALL)
+#        from AudioEndpointControl.MMConstants import (
+#            PKEY_Device_FriendlyName,
+#            PKEY_Device_DeviceDesc,
+#            PKEY_DeviceInterface_FriendlyName)
 
         self.assertEqual(str(Render), b'Render')
         self.assertEqual(str(Capture), b'Capture')
@@ -21,49 +30,77 @@ class TestConstants(unittest.TestCase):
 
         self.assertEqual(str(DEVICE_STATE_ACTIVE), b'DEVICE_STATE_ACTIVE')
         self.assertEqual(str(DEVICE_STATE_DISABLED), b'DEVICE_STATE_DISABLED')
-        self.assertEqual(str(DEVICE_STATE_NOTPRESENT), b'DEVICE_STATE_NOTPRESENT')
-        self.assertEqual(str(DEVICE_STATE_UNPLUGGED), b'DEVICE_STATE_UNPLUGGED')
+        self.assertEqual(str(DEVICE_STATE_NOTPRESENT),
+                         b'DEVICE_STATE_NOTPRESENT')
+        self.assertEqual(str(DEVICE_STATE_UNPLUGGED),
+                         b'DEVICE_STATE_UNPLUGGED')
         self.assertEqual(str(DEVICE_STATEMASK_ALL), b'DEVICE_STATEMASK_ALL')
 
 
 class TestAudioEndpoints(unittest.TestCase):
+
     def setUp(self):
         import AudioEndpointControl
         self.AudioEndpointControl = AudioEndpointControl
         self.AudioDevices = AudioEndpointControl.AudioEndpoints()
 
     def test_init(self):
-        self.assertEqual(type(self.AudioDevices), self.AudioEndpointControl.AudioEndpoints)
+        self.assertEqual(type(self.AudioDevices),
+                         self.AudioEndpointControl.AudioEndpoints)
 
     def test_GetDefault(self):
-        self.assertEqual(type(self.AudioDevices.GetDefault()), self.AudioEndpointControl.AudioEndpoint)
+        self.assertEqual(type(self.AudioDevices.GetDefault()),
+                         self.AudioEndpointControl.AudioEndpoint)
 
     def test_SetDefault(self):
-        self.assertEqual(type(self.AudioDevices.SetDefault(self.AudioDevices.GetDefault())), self.AudioEndpointControl.AudioEndpoint)
+        self.assertEqual(
+            type(self.AudioDevices.SetDefault(
+                self.AudioDevices.GetDefault())),
+            self.AudioEndpointControl.AudioEndpoint)
 
     def test_Methods(self):
         self.assertEqual(type(str(self.AudioDevices)), str)
         self.assertEqual(type(len(self.AudioDevices)), int)
-        self.assertEqual(type(self.AudioDevices(self.AudioDevices.GetDefault().getId())), self.AudioEndpointControl.AudioEndpoint)
-        self.assertEqual(type(self.AudioDevices(self.AudioDevices.GetDefault().getName())), self.AudioEndpointControl.AudioEndpoint)
+        self.assertEqual(
+            type(self.AudioDevices(self.AudioDevices.GetDefault().getId())),
+            self.AudioEndpointControl.AudioEndpoint)
+        self.assertEqual(
+            type(self.AudioDevices(self.AudioDevices.GetDefault().getName())),
+            self.AudioEndpointControl.AudioEndpoint)
 
         from _ctypes import COMError
         with self.assertRaises(COMError):
             self.AudioDevices("Wrong number")
 
         # TODO: test methods after changing these settings
-        from AudioEndpointControl.MMConstants import DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL
-        for state in (DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL):
+        from AudioEndpointControl.MMConstants import (DEVICE_STATE_ACTIVE,
+                                                      DEVICE_STATE_DISABLED,
+                                                      DEVICE_STATE_NOTPRESENT,
+                                                      DEVICE_STATE_UNPLUGGED,
+                                                      DEVICE_STATEMASK_ALL)
+        for state in (
+                DEVICE_STATE_ACTIVE,
+                DEVICE_STATE_DISABLED,
+                DEVICE_STATE_NOTPRESENT,
+                DEVICE_STATE_UNPLUGGED,
+                DEVICE_STATEMASK_ALL):
             self.AudioDevices.ChangeFilter(DEVICE_STATE=state)
             self.assertEqual(self.AudioDevices.DEVICE_STATE, state)
 
-        from AudioEndpointControl.MMConstants import PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName
-        for pkey in (PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName):
+        from AudioEndpointControl.MMConstants import (
+            PKEY_Device_FriendlyName,
+            PKEY_Device_DeviceDesc,
+            PKEY_DeviceInterface_FriendlyName)
+        for pkey in (
+                PKEY_Device_FriendlyName,
+                PKEY_Device_DeviceDesc,
+                PKEY_DeviceInterface_FriendlyName):
             self.AudioDevices.ChangeFilter(PKEY_Device=pkey)
             self.assertEqual(self.AudioDevices.PKEY_Device, pkey)
 
 
 class TestAudioEndpoint(unittest.TestCase):
+
     def setUp(self):
         import AudioEndpointControl
         self.AudioEndpointControl = AudioEndpointControl
@@ -75,7 +112,8 @@ class TestAudioEndpoint(unittest.TestCase):
 
     def test_isDefault(self):
         from AudioEndpointControl.MMConstants import Console, Render
-        self.assertEqual(self.AudioDevice.isDefault(role=Console, dataFlow=Render), True)
+        self.assertEqual(self.AudioDevice.isDefault(
+            role=Console, dataFlow=Render), True)
 
     def test_Methods(self):
         self.assertEqual(type(self.AudioDevice.GetMute()), bool)
@@ -88,9 +126,11 @@ class TestAudioEndpoint(unittest.TestCase):
         self.assertEqual(type(float(self.AudioDevice.volume)), float)
         SaveOld = float(self.AudioDevice.volume)
         self.AudioDevice.volume = SaveOld / 2
-        self.assertAlmostEqual(float(self.AudioDevice.volume), SaveOld / 2, places=6)
+        self.assertAlmostEqual(
+            float(self.AudioDevice.volume), SaveOld / 2, places=6)
         self.AudioDevice.volume = SaveOld
-        self.assertAlmostEqual(float(self.AudioDevice.volume), SaveOld, places=6)
+        self.assertAlmostEqual(
+            float(self.AudioDevice.volume), SaveOld, places=6)
 
         self.assertEqual(type(self.AudioDevice.getName()), unicode)
         self.assertEqual(type(unicode(self.AudioDevice)), unicode)
@@ -99,11 +139,13 @@ class TestAudioEndpoint(unittest.TestCase):
         self.assertEqual(type(self.AudioDevice.getState()), long)
         self.assertEqual(type(self.AudioDevice.GetMute()), bool)
 #
-#def SetMute(self, bMute):
-#def __eq__(self, other):
-#def __ne__(self, other):
+# def SetMute(self, bMute):
+# def __eq__(self, other):
+# def __ne__(self, other):
+
 
 class TestAudioVolume(unittest.TestCase):
+
     def setUp(self):
         import AudioEndpointControl
         self.AudioEndpointControl = AudioEndpointControl
@@ -111,7 +153,8 @@ class TestAudioVolume(unittest.TestCase):
         self.AudioDevice = self.AudioDevices.GetDefault()
 
     def test_init(self):
-        self.assertEqual(type(self.AudioDevice.volume), self.AudioEndpointControl.AudioVolume)
+        self.assertEqual(type(self.AudioDevice.volume),
+                         self.AudioEndpointControl.AudioVolume)
 
     def test_Mute(self):
         self.assertEqual(type(self.AudioDevice.volume.Mute), bool)
@@ -122,11 +165,15 @@ class TestAudioVolume(unittest.TestCase):
         self.assertEqual(self.AudioDevice.volume.Mute, SaveOld)
 
     def test_Get(self):
-        self.assertEqual(type(self.AudioDevice.volume.Get(Channel=0, Scalar=True)), float)
-        self.assertEqual(type(self.AudioDevice.volume.Get(Channel=0, Scalar=False)), float)
+        self.assertEqual(
+            type(self.AudioDevice.volume.Get(Channel=0, Scalar=True)), float)
+        self.assertEqual(
+            type(self.AudioDevice.volume.Get(Channel=0, Scalar=False)), float)
         for channel in xrange(1, self.AudioDevice.volume.GetChannelCount() + 1):
-            self.assertEqual(type(self.AudioDevice.volume.Get(Channel=channel, Scalar=True)), float)
-            self.assertEqual(type(self.AudioDevice.volume.Get(Channel=channel, Scalar=False)), float)
+            self.assertEqual(type(self.AudioDevice.volume.Get(
+                Channel=channel, Scalar=True)), float)
+            self.assertEqual(type(self.AudioDevice.volume.Get(
+                Channel=channel, Scalar=False)), float)
             self.assertEqual(type(self.AudioDevice.volume[channel]), float)
 
     def test_Set(self):
@@ -138,33 +185,50 @@ class TestAudioVolume(unittest.TestCase):
 
         SaveOld = self.AudioDevice.volume.Get(Channel=0)
         self.AudioDevice.volume.Set(SaveOld / 2)
-        self.assertAlmostEqual(self.AudioDevice.volume.Get(Channel=0), SaveOld / 2, places=6)
+        self.assertAlmostEqual(self.AudioDevice.volume.Get(
+            Channel=0), SaveOld / 2, places=6)
         self.AudioDevice.volume.Set(SaveOld)
-        self.assertAlmostEqual(self.AudioDevice.volume.Get(Channel=0), SaveOld, places=6)
+        self.assertAlmostEqual(self.AudioDevice.volume.Get(
+            Channel=0), SaveOld, places=6)
 
         SaveOld = self.AudioDevice.volume.Get(Channel=0, Scalar=False)
         self.AudioDevice.volume.Set(SaveOld / 2, Scalar=False)
-        self.assertAlmostEqual(self.AudioDevice.volume.Get(Channel=0, Scalar=False), SaveOld / 2, places=6)
+        self.assertAlmostEqual(self.AudioDevice.volume.Get(
+            Channel=0, Scalar=False), SaveOld / 2, places=6)
         self.AudioDevice.volume.Set(SaveOld, Scalar=False)
-        self.assertEqual(self.AudioDevice.volume.Get(Channel=0, Scalar=False), SaveOld)
+        self.assertEqual(self.AudioDevice.volume.Get(
+            Channel=0, Scalar=False), SaveOld)
 
-        SaveOld = self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True)
-        self.AudioDevice.volume.Set(SaveOld / 2, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True)
-        self.assertAlmostEqual(self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True), SaveOld / 2, places=6)
-        self.AudioDevice.volume.Set(SaveOld, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True)
-        self.assertAlmostEqual(self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True), SaveOld, places=6)
+        SaveOld = self.AudioDevice.volume.Get(
+            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True)
+        self.AudioDevice.volume.Set(
+            SaveOld / 2, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True)
+        self.assertAlmostEqual(self.AudioDevice.volume.Get(
+            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True), SaveOld / 2, places=6)
+        self.AudioDevice.volume.Set(
+            SaveOld, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True)
+        self.assertAlmostEqual(self.AudioDevice.volume.Get(
+            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=True), SaveOld, places=6)
 
-        SaveOld = self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
-        self.AudioDevice.volume.Set(SaveOld / 2, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
-        self.assertAlmostEqual(self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False), SaveOld / 2, places=6)
-        self.AudioDevice.volume.Set(SaveOld, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
-        self.assertEqual(self.AudioDevice.volume.Get(Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False), SaveOld)
+        SaveOld = self.AudioDevice.volume.Get(
+            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
+        self.AudioDevice.volume.Set(
+            SaveOld / 2, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
+        self.assertAlmostEqual(self.AudioDevice.volume.Get(
+            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False), SaveOld / 2, places=6)
+        self.AudioDevice.volume.Set(
+            SaveOld, Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False)
+        self.assertEqual(self.AudioDevice.volume.Get(
+            Channel=self.AudioDevice.volume.GetChannelCount(), Scalar=False), SaveOld)
 
     def test_Methods(self):
         self.assertEqual(type(self.AudioDevice.volume.GetChannelCount()), long)
-        self.assertEqual(len(self.AudioDevice.volume), self.AudioDevice.volume.GetChannelCount())
-        self.assertEqual(str(self.AudioDevice.volume).partition(':')[0], b'Volume')
-        self.assertEqual(unicode(self.AudioDevice.volume).partition(':')[0], u'Volume')
+        self.assertEqual(len(self.AudioDevice.volume),
+                         self.AudioDevice.volume.GetChannelCount())
+        self.assertEqual(
+            str(self.AudioDevice.volume).partition(':')[0], b'Volume')
+        self.assertEqual(
+            unicode(self.AudioDevice.volume).partition(':')[0], u'Volume')
         self.assertEqual(self.AudioDevice.volume, self.AudioDevice.volume)
         self.assertEqual(type(float(self.AudioDevice.volume)), float)
         self.assertEqual(type(int(self.AudioDevice.volume)), int)
@@ -186,22 +250,14 @@ class TestAudioVolume(unittest.TestCase):
         for value in self.AudioDevice.volume.GetStepInfo():
             self.assertEqual(type(value), long)
 
-        self.assertEqual(type(self.AudioDevice.volume.QueryHardwareSupport()), long)
-        self.assertGreaterEqual(self.AudioDevice.volume.QueryHardwareSupport(), 0)
+        self.assertEqual(
+            type(self.AudioDevice.volume.QueryHardwareSupport()), long)
+        self.assertGreaterEqual(
+            self.AudioDevice.volume.QueryHardwareSupport(), 0)
         self.assertLessEqual(self.AudioDevice.volume.QueryHardwareSupport(), 7)
 
-#        def RegisterControlChangeNotify(self, callback):
-#        def UnregisterControlChangeNotify(self):
 #        def __ne__(self, other):
 #        def __le__(self, other):
-
-#class TestStringMethods(unittest.TestCase):
-#    def test_split(self):
-#        s = 'hello world'
-#        self.assertEqual(s.split(), ['hello', 'world'])
-#        # check that s.split fails when the separator is not a string
-#        with self.assertRaises(TypeError):
-#            s.split(2)
 
 if __name__ == '__main__':
     unittest.main()
