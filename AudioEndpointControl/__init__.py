@@ -55,7 +55,7 @@ def _GetValue(value):
 class AudioVolume(object):
     """Wrapper for volume related methods."""
     def __init__(self, endpoint, EventContext=None):
-        self.callback = None
+        self._callback = None
         self.endpoint = endpoint
         self.EventContext = EventContext
 
@@ -155,9 +155,9 @@ class AudioVolume(object):
 
     def RegisterControlChangeNotify(self, callback):
         """Registers a client's notification callback interface."""
-        self.callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
+        self._callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
         hr = self._AudioEndpointVolume.RegisterControlChangeNotify(
-            self.callback
+            self._callback
         )
         if hr:
             print('RegisterControlChangeNotify', hr, FormatMessage(hr))
@@ -166,13 +166,13 @@ class AudioVolume(object):
         """
         Deletes the registration of a client's notification callback interface.
         """
-        if self.callback is not None:
+        if self._callback is not None:
             hr = self._AudioEndpointVolume.UnregisterControlChangeNotify(
-                self.callback
+                self._callback
             )
             if hr:
                 print('UnregisterControlChangeNotify', hr, FormatMessage(hr))
-            self.callback = None
+            self._callback = None
 
     def __add__(self, other=1):
         for _ in range(other):
@@ -308,7 +308,7 @@ class AudioEndpoints(object):
             _IMMDeviceEnumerator,
             CLSCTX_INPROC_SERVER
         )
-        self.callback = None
+        self._callback = None
         self._PolicyConfig = None
 
     # TODO: Missing class docstring (missing-docstring)
@@ -335,8 +335,8 @@ class AudioEndpoints(object):
 
     # TODO: Missing class docstring (missing-docstring)
     def RegisterCallback(self, callback):
-        self.callback = CMMNotificationClient(callback, self)
-        hr = self.pDevEnum.RegisterEndpointNotificationCallback(self.callback)
+        self._callback = CMMNotificationClient(callback, self)
+        hr = self.pDevEnum.RegisterEndpointNotificationCallback(self._callback)
         if hr:
             print(
                 'RegisterEndpointNotificationCallback',
@@ -346,9 +346,9 @@ class AudioEndpoints(object):
 
     # TODO: Missing class docstring (missing-docstring)
     def UnregisterCallback(self):
-        if self.callback is not None:
+        if self._callback is not None:
             hr = self.pDevEnum.UnregisterEndpointNotificationCallback(
-                self.callback
+                self._callback
             )
             if hr:
                 print(
@@ -356,7 +356,7 @@ class AudioEndpoints(object):
                     hr,
                     FormatMessage(hr)
                 )
-            self.callback = None
+            self._callback = None
 
     def __call__(self, ID):
         try:
