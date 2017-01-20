@@ -303,7 +303,7 @@ class AudioEndpoints(object):
         self.DEVICE_STATE = DEVICE_STATE
         self.PKEY_Device = PKEY_Device
         self.EventContext = EventContext
-        self.pDevEnum = CoCreateInstance(
+        self._DevEnum = CoCreateInstance(
             _CLSID_MMDeviceEnumerator,
             _IMMDeviceEnumerator,
             CLSCTX_INPROC_SERVER
@@ -314,7 +314,7 @@ class AudioEndpoints(object):
     # TODO: Missing class docstring (missing-docstring)
     def GetDefault(self, role=Console, dataFlow=Render):
         return AudioEndpoint(
-            self.pDevEnum.GetDefaultAudioEndpoint(dataFlow, role),
+            self._DevEnum.GetDefaultAudioEndpoint(dataFlow, role),
             self,
             self.PKEY_Device,
             self.EventContext
@@ -336,7 +336,7 @@ class AudioEndpoints(object):
     # TODO: Missing class docstring (missing-docstring)
     def RegisterCallback(self, callback):
         self._callback = CMMNotificationClient(callback, self)
-        hr = self.pDevEnum.RegisterEndpointNotificationCallback(self._callback)
+        hr = self._DevEnum.RegisterEndpointNotificationCallback(self._callback)
         if hr:
             print(
                 'RegisterEndpointNotificationCallback',
@@ -347,7 +347,7 @@ class AudioEndpoints(object):
     # TODO: Missing class docstring (missing-docstring)
     def UnregisterCallback(self):
         if self._callback is not None:
-            hr = self.pDevEnum.UnregisterEndpointNotificationCallback(
+            hr = self._DevEnum.UnregisterEndpointNotificationCallback(
                 self._callback
             )
             if hr:
@@ -361,7 +361,7 @@ class AudioEndpoints(object):
     def __call__(self, ID):
         try:
             return AudioEndpoint(
-                self.pDevEnum.GetDevice(ID),
+                self._DevEnum.GetDevice(ID),
                 self,
                 self.PKEY_Device,
                 self.EventContext
@@ -384,7 +384,7 @@ class AudioEndpoints(object):
             self.PKEY_Device = PKEY_Device
 
     def __iter__(self, dataFlow=Render):
-        pEndpoints = self.pDevEnum.EnumAudioEndpoints(
+        pEndpoints = self._DevEnum.EnumAudioEndpoints(
             dataFlow, self.DEVICE_STATE
         )
         for i in range(pEndpoints.GetCount()):
@@ -398,7 +398,7 @@ class AudioEndpoints(object):
     # pylint: disable=invalid-length-returned
     def __len__(self):
         return int(
-            self.pDevEnum.EnumAudioEndpoints(
+            self._DevEnum.EnumAudioEndpoints(
                 Render, self.DEVICE_STATE
             ).GetCount()
         )
