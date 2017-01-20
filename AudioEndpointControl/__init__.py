@@ -60,7 +60,7 @@ class AudioVolume(object):
         self.EventContext = EventContext
 
         self._AudioEndpointVolume = _POINTER(_IAudioEndpointVolume)(
-            endpoint.endpoint.Activate(
+            endpoint._endpoint.Activate(
                 IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None
             )
         )
@@ -232,7 +232,7 @@ class AudioEndpoint(object):
             EventContext=None
     ):
         """Initializes an endpoint object."""
-        self.endpoint = endpoint
+        self._endpoint = endpoint
         self.endpoints = endpoints
         self.PKEY_Device = PKEY_Device
         self.EventContext = EventContext
@@ -255,16 +255,16 @@ class AudioEndpoint(object):
 
     def getName(self):
         """Return an endpoint devices FriendlyName."""
-        pStore = self.endpoint.OpenPropertyStore(STGM_READ)
+        pStore = self._endpoint.OpenPropertyStore(STGM_READ)
         return _GetValue(pStore.GetValue(self.PKEY_Device))
 
     def getId(self):
         """Gets a string that identifies the device."""
-        return self.endpoint.GetId()
+        return self._endpoint.GetId()
 
     def getState(self):
         """Gets the current state of the device."""
-        return self.endpoint.GetState()
+        return self._endpoint.GetState()
 
     def isDefault(self, role=Console, dataFlow=Render):
         """Return if endpoint device is default or not."""
