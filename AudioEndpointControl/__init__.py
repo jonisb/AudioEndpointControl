@@ -54,15 +54,20 @@ def _GetValue(value):
 
 class AudioVolume(object):
     """Wrapper for volume related methods."""
-    def __init__(self, endpoint, IAudioEndpointVolume, EventContext=None):
+    def __init__(self, endpoint, EventContext=None):
         self.callback = None
         self.endpoint = endpoint
-        self.IAudioEndpointVolume = IAudioEndpointVolume
         self.EventContext = EventContext
+
+        self._AudioEndpointVolume = _POINTER(_IAudioEndpointVolume)(
+            endpoint.endpoint.Activate(
+                IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None
+            )
+        )
 
     def GetChannelCount(self):
         """Gets a count of the channels in the audio stream."""
-        return self.IAudioEndpointVolume.GetChannelCount()
+        return self._AudioEndpointVolume.GetChannelCount()
 
     def __len__(self):
         return self.GetChannelCount()
@@ -83,16 +88,16 @@ class AudioVolume(object):
         """
         if Channel == 0:
             if Scalar:
-                return self.IAudioEndpointVolume.GetMasterVolumeLevelScalar()
+                return self._AudioEndpointVolume.GetMasterVolumeLevelScalar()
             else:
-                return self.IAudioEndpointVolume.GetMasterVolumeLevel()
+                return self._AudioEndpointVolume.GetMasterVolumeLevel()
 
         if Scalar:
-            return self.IAudioEndpointVolume.GetChannelVolumeLevelScalar(
+            return self._AudioEndpointVolume.GetChannelVolumeLevelScalar(
                 Channel-1
             )
 
-        return self.IAudioEndpointVolume.GetChannelVolumeLevel(Channel-1)
+        return self._AudioEndpointVolume.GetChannelVolumeLevel(Channel-1)
 
     def Set(self, LevelDB, Channel=0, Scalar=True):
         """
@@ -110,48 +115,48 @@ class AudioVolume(object):
 
         """
         if isinstance(LevelDB, bool):
-            self.IAudioEndpointVolume.SetMute(LevelDB, self.EventContext)
+            self._AudioEndpointVolume.SetMute(LevelDB, self.EventContext)
         elif Channel == 0:
             if Scalar:
-                self.IAudioEndpointVolume.SetMasterVolumeLevelScalar(
+                self._AudioEndpointVolume.SetMasterVolumeLevelScalar(
                     LevelDB, self.EventContext)
             else:
-                self.IAudioEndpointVolume.SetMasterVolumeLevel(
+                self._AudioEndpointVolume.SetMasterVolumeLevel(
                     LevelDB, self.EventContext)
         else:
             if Scalar:
-                self.IAudioEndpointVolume.SetChannelVolumeLevelScalar(
+                self._AudioEndpointVolume.SetChannelVolumeLevelScalar(
                     Channel-1, LevelDB, self.EventContext)
             else:
-                self.IAudioEndpointVolume.SetChannelVolumeLevel(
+                self._AudioEndpointVolume.SetChannelVolumeLevel(
                     Channel-1, LevelDB, self.EventContext)
 
     def GetRange(self):
         """Gets the volume range of the audio stream, in decibels."""
-        return self.IAudioEndpointVolume.GetVolumeRange()
+        return self._AudioEndpointVolume.GetVolumeRange()
 
     def StepDown(self):
         """Decreases the volume level by one step."""
-        return self.IAudioEndpointVolume.VolumeStepDown(self.EventContext)
+        return self._AudioEndpointVolume.VolumeStepDown(self.EventContext)
 
     def StepUp(self):
         """Increases the volume level by one step."""
-        return self.IAudioEndpointVolume.VolumeStepUp(self.EventContext)
+        return self._AudioEndpointVolume.VolumeStepUp(self.EventContext)
 
     def GetStepInfo(self):
         """Gets information about the current step in the volume range."""
-        return self.IAudioEndpointVolume.GetVolumeStepInfo()
+        return self._AudioEndpointVolume.GetVolumeStepInfo()
 
     def QueryHardwareSupport(self):
         """
         Queries the audio endpoint device for its hardware-supported functions.
         """
-        return self.IAudioEndpointVolume.QueryHardwareSupport()
+        return self._AudioEndpointVolume.QueryHardwareSupport()
 
     def RegisterControlChangeNotify(self, callback):
         """Registers a client's notification callback interface."""
         self.callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
-        hr = self.IAudioEndpointVolume.RegisterControlChangeNotify(
+        hr = self._AudioEndpointVolume.RegisterControlChangeNotify(
             self.callback
         )
         if hr:
@@ -162,7 +167,7 @@ class AudioVolume(object):
         Deletes the registration of a client's notification callback interface.
         """
         if self.callback is not None:
-            hr = self.IAudioEndpointVolume.UnregisterControlChangeNotify(
+            hr = self._AudioEndpointVolume.UnregisterControlChangeNotify(
                 self.callback
             )
             if hr:
@@ -188,7 +193,7 @@ class AudioVolume(object):
 
     @property
     def Mute(self):  # TODO: Missing method docstring (missing-docstring)
-        return bool(self.IAudioEndpointVolume.GetMute())
+        return bool(self._AudioEndpointVolume.GetMute())
 
     @Mute.setter
     def Mute(self, bMute):
@@ -231,14 +236,8 @@ class AudioEndpoint(object):
         self.endpoints = endpoints
         self.PKEY_Device = PKEY_Device
         self.EventContext = EventContext
-        self.IAudioEndpointVolume = _POINTER(_IAudioEndpointVolume)(
-            endpoint.Activate(
-                IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None
-            )
-        )
         self._AudioVolume = AudioVolume(
             self,
-            self.IAudioEndpointVolume,
             self.EventContext
         )
         self.RegisterControlChangeNotify = self._AudioVolume.\
