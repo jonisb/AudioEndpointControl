@@ -98,6 +98,15 @@ class TestAudioEndpoints(unittest.TestCase):
             self.AudioDevices.ChangeFilter(PKEY_Device=pkey)
             self.assertEqual(self.AudioDevices.PKEY_Device, pkey)
 
+    def test_Notificatios(self):
+        with self.assertRaises(Exception):
+            self.AudioDevices.RegisterCallback(None)
+        with self.assertRaises(Exception):
+            self.AudioDevices.UnregisterCallback()
+        self.assertEqual(self.AudioDevices.RegisterCallback(
+            type(str("MMNotificationClient"), (), {})()), None)
+        self.assertEqual(self.AudioDevices.UnregisterCallback(), None)
+
 
 class TestAudioEndpoint(unittest.TestCase):
 
@@ -148,8 +157,8 @@ class TestAudioEndpoint(unittest.TestCase):
             self.AudioDevice.RegisterControlChangeNotify(None)
         with self.assertRaises(Exception):
             self.AudioDevice.UnregisterControlChangeNotify()
-        self.assertEqual(self.AudioDevice.RegisterControlChangeNotify(type(str(
-            "AudioEndpointVolumeCallback"), (), {})()), None)
+        self.assertEqual(self.AudioDevice.RegisterControlChangeNotify(
+            type(str("AudioEndpointVolumeCallback"), (), {})()), None)
         self.assertEqual(self.AudioDevice.UnregisterControlChangeNotify(),
                          None)
 

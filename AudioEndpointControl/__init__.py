@@ -340,29 +340,31 @@ class AudioEndpoints(object):
             print('SetDefaultEndpoint', FormatMessage(hr))
         return OldDefault
 
-    # TODO: Missing class docstring (missing-docstring)
     def RegisterCallback(self, callback):
+        """Registers a client's notification callback interface."""
         self._callback = CMMNotificationClient(callback, self)
-        hr = self._DevEnum.RegisterEndpointNotificationCallback(self._callback)
-        if hr:
-            print(
-                'RegisterEndpointNotificationCallback',
-                hr,
-                FormatMessage(hr)
-            )
-
-    # TODO: Missing class docstring (missing-docstring)
-    def UnregisterCallback(self):
-        if self._callback is not None:
-            hr = self._DevEnum.UnregisterEndpointNotificationCallback(
-                self._callback
-            )
+        try:
+            hr = self._DevEnum.RegisterEndpointNotificationCallback(
+                self._callback)
             if hr:
-                print(
-                    'UnregisterEndpointNotificationCallback',
-                    hr,
-                    FormatMessage(hr)
-                )
+                raise Exception("RegisterEndpointNotificationCallback returned:",
+                                FormatMessage(hr))
+        except COMError as e:
+            raise Exception("RegisterEndpointNotificationCallback error:", e.text)
+
+    def UnregisterCallback(self):
+        """
+        Deletes the registration of a client's notification callback interface.
+        """
+        try:
+            hr = self._DevEnum.UnregisterEndpointNotificationCallback(
+                self._callback)
+            if hr:
+                raise Exception("UnregisterEndpointNotificationCallback returned:",
+                                FormatMessage(hr))
+        except COMError as e:
+            raise Exception("UnregisterEndpointNotificationCallback error:", e.text)
+        else:
             self._callback = None
 
     def __call__(self, ID):

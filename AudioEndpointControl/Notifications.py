@@ -51,6 +51,8 @@ class CMMNotificationClient(_COMObject):  # TODO: Missing class docstring
     _com_interfaces_ = [IMMNotificationClient]
 
     def __init__(self, Callback, endpoints):
+        if Callback is None:
+            raise Exception("Callback object required, got:", repr(Callback))
         self._AudioDevices = endpoints
         self._Callback = Callback
         _COMObject.__init__(self)
