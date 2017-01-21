@@ -156,22 +156,30 @@ class AudioVolume(object):
     def RegisterControlChangeNotify(self, callback):
         """Registers a client's notification callback interface."""
         self._callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
-        hr = self._AudioEndpointVolume.RegisterControlChangeNotify(
-            self._callback
-        )
-        if hr:
-            print('RegisterControlChangeNotify', hr, FormatMessage(hr))
+        try:
+            hr = self._AudioEndpointVolume.RegisterControlChangeNotify(
+                self._callback
+            )
+            if hr:
+                raise Exception("RegisterControlChangeNotify returned:",
+                                FormatMessage(hr))
+        except COMError as e:
+            raise Exception("RegisterControlChangeNotify error:", e.text)
 
     def UnregisterControlChangeNotify(self):
         """
         Deletes the registration of a client's notification callback interface.
         """
-        if self._callback is not None:
+        try:
             hr = self._AudioEndpointVolume.UnregisterControlChangeNotify(
                 self._callback
             )
             if hr:
-                print('UnregisterControlChangeNotify', hr, FormatMessage(hr))
+                raise Exception("UnregisterControlChangeNotify returned:",
+                                FormatMessage(hr))
+        except COMError as e:
+            raise Exception("UnregisterControlChangeNotify error:", e.text)
+        else:
             self._callback = None
 
     def __add__(self, other=1):
@@ -221,7 +229,6 @@ class AudioVolume(object):
     __neg__ = __sub__
 
 
-# FIXME: Too many instance attributes (8/7) (too-many-instance-attributes)
 class AudioEndpoint(object):
     """Wrapper for a single COM endpoint."""
     def __init__(

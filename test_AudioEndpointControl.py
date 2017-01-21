@@ -143,6 +143,16 @@ class TestAudioEndpoint(unittest.TestCase):
 # def __eq__(self, other):
 # def __ne__(self, other):
 
+    def test_Notificatios(self):
+        with self.assertRaises(Exception):
+            self.AudioDevice.RegisterControlChangeNotify(None)
+        with self.assertRaises(Exception):
+            self.AudioDevice.UnregisterControlChangeNotify()
+        self.assertEqual(self.AudioDevice.RegisterControlChangeNotify(type(str(
+            "AudioEndpointVolumeCallback"), (), {})()), None)
+        self.assertEqual(self.AudioDevice.UnregisterControlChangeNotify(),
+                         None)
+
 
 class TestAudioVolume(unittest.TestCase):
 
@@ -282,6 +292,7 @@ class TestAudioVolume(unittest.TestCase):
 
 #        def __ne__(self, other):
 #        def __le__(self, other):
+
 
 if __name__ == '__main__':
     unittest.main()

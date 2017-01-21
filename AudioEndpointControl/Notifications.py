@@ -34,6 +34,8 @@ class CAudioEndpointVolumeCallback(_COMObject):
     _com_interfaces_ = [IAudioEndpointVolumeCallback]
 
     def __init__(self, Callback, endpoint):
+        if Callback is None:
+            raise Exception("Callback object required, got:", repr(Callback))
         self._Callback = Callback
         self._endpoint = endpoint
         _COMObject.__init__(self)
@@ -41,8 +43,8 @@ class CAudioEndpointVolumeCallback(_COMObject):
     def OnNotify(self, this, pNotify):  # TODO: Missing method docstring
         try:
             self._Callback.OnNotify(cNotify(pNotify), self._endpoint)
-        except:  # FIX: No exception type(s) specified (bare-except)
-            traceback.print_exc(file=sys.stdout)
+        except AttributeError:  # TODO: Log warning "OnNotify" method missing
+            pass
 
 
 class CMMNotificationClient(_COMObject):  # TODO: Missing class docstring
