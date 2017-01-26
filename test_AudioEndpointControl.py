@@ -127,7 +127,7 @@ class TestAudioEndpoint(unittest.TestCase):
     def test_Methods(self):
         self.assertEqual(type(self.AudioDevice.GetMute()), bool)
         SaveOld = self.AudioDevice.GetMute()
-        self.AudioDevice.volume = not SaveOld
+        self.AudioDevice.SetMute(not SaveOld)
         self.assertEqual(self.AudioDevice.GetMute(), not SaveOld)
         self.AudioDevice.volume = SaveOld
         self.assertEqual(self.AudioDevice.GetMute(), SaveOld)
@@ -147,10 +147,6 @@ class TestAudioEndpoint(unittest.TestCase):
         self.assertEqual(type(self.AudioDevice.getId()), unicode)
         self.assertEqual(type(self.AudioDevice.getState()), long)
         self.assertEqual(type(self.AudioDevice.GetMute()), bool)
-#
-# def SetMute(self, bMute):
-# def __eq__(self, other):
-# def __ne__(self, other):
 
     def test_Notificatios(self):
         with self.assertRaises(Exception):
@@ -278,9 +274,11 @@ class TestAudioVolume(unittest.TestCase):
 
         SaveOld = self.AudioDevice.volume.Get()
         +self.AudioDevice.volume
+        +self.AudioDevice.volume
         self.assertGreaterEqual(self.AudioDevice.volume, SaveOld)
         -self.AudioDevice.volume
-        self.assertLessEqual(float(self.AudioDevice.volume), SaveOld)
+        -self.AudioDevice.volume
+        self.assertLessEqual(self.AudioDevice.volume, SaveOld)
         self.AudioDevice.volume = SaveOld
 
         self.assertEqual(type(self.AudioDevice.volume.GetRange()), tuple)
