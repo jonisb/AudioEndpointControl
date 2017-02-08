@@ -34,8 +34,6 @@ from .EndpointvolumeAPI import (IAudioEndpointVolume as _IAudioEndpointVolume,
                                 IID_IAudioEndpointVolume)
 from .PolicyConfigAPI import CLSID_CPolicyConfigVistaClient, IPolicyConfigVista
 
-__version__ = '0.1a2'
-
 _CLSID_MMDeviceEnumerator = _MMDeviceEnumerator._reg_clsid_
 
 
