@@ -17,5 +17,5 @@ ratings:
   paths:
   - "**.py"
   - "**.md"
-exclude_paths: []
+exclude_paths:
 - "test_AudioEndpointControl.py"
