@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# TODO: Missing module docstring (missing-docstring)
+"""Notifications wrapper classes"""
 
 from __future__ import print_function, unicode_literals, absolute_import
 

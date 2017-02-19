@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# TODO: Missing module docstring (missing-docstring)
+"""Defines the main classes AudioEndpoints, AudioEndpoint and AudioVolume"""
 
 from __future__ import print_function, unicode_literals, absolute_import
 
@@ -297,8 +297,9 @@ class AudioEndpoint(object):
         return str(self.getName())
 
 
-# TODO: Missing class docstring (missing-docstring)
 class AudioEndpoints(object):
+    """The main class to access all endpoints in the system"""
+
     def __init__(
             self,
             DEVICE_STATE=DEVICE_STATE_ACTIVE,

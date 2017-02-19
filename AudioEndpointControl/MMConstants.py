@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# TODO: Missing module docstring (missing-docstring)
+"""Defines constants and types needed"""
 
 from __future__ import print_function, unicode_literals
 
@@ -54,7 +54,7 @@ class _ValueTypeClass(object):
 
 
 def _CreateValueType(Name, ValueMap):
-    """ """  # Todo
+    """ """  # TODO
     ValueType = type(str(Name), (_ValueTypeClass,), {'_valueMap': ValueMap})
 
     for _value, _name in ValueMap.iteritems():
