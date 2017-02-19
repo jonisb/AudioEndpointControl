@@ -3,6 +3,13 @@
 
 from __future__ import print_function, unicode_literals
 
+__all__ = (b"Render", b"Capture", b"All", b"Console",
+           b"Multimedia", b"Communications", b"DEVICE_STATE_ACTIVE",
+           b"DEVICE_STATE_DISABLED", b"DEVICE_STATE_NOTPRESENT",
+           b"DEVICE_STATE_UNPLUGGED", b"DEVICE_STATEMASK_ALL",
+           b"PKEY_Device_FriendlyName", b"PKEY_Device_DeviceDesc",
+           b"PKEY_DeviceInterface_FriendlyName")
+
 from comtypes import GUID as _GUID
 
 try:

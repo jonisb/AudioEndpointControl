@@ -9,8 +9,8 @@ from ctypes import POINTER as _POINTER, c_float as _c_float, cast as _cast
 
 from comtypes import COMObject as _COMObject
 
-from . import IMMNotificationClient
 from .MMConstants import DataFlowType, RoleType, Device_StateType
+from .AudioEndpoints import IMMNotificationClient
 from .EndpointvolumeAPI import IAudioEndpointVolumeCallback
 
 

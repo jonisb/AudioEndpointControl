@@ -3,14 +3,24 @@ from __future__ import print_function, unicode_literals
 
 import AudioEndpointControl
 # DataFlow enumeration: The DataFlow enumeration defines constants that indicate the direction in which audio data flows between an audio endpoint device and an application.
-from AudioEndpointControl.MMConstants import Render, Capture, All
+from AudioEndpointControl import Render, Capture, All
 # Role enumeration: The Role enumeration defines constants that indicate the role that the system has assigned to an audio endpoint device.
-from AudioEndpointControl.MMConstants import Console, Multimedia, Communications
+from AudioEndpointControl import Console, Multimedia, Communications
 # DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the current state of an audio endpoint device.
-from AudioEndpointControl.MMConstants import DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL
+from AudioEndpointControl import (
+    DEVICE_STATE_ACTIVE,
+    DEVICE_STATE_DISABLED,
+    DEVICE_STATE_NOTPRESENT,
+    DEVICE_STATE_UNPLUGGED,
+    DEVICE_STATEMASK_ALL
+    )
 # Each PKEY_Xxx property identifier in the following list is a constant of type PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h.
 # All audio endpoint devices have these three device properties.
-from AudioEndpointControl.MMConstants import PKEY_Device_FriendlyName, PKEY_Device_DeviceDesc, PKEY_DeviceInterface_FriendlyName
+from AudioEndpointControl import (
+    PKEY_Device_FriendlyName,
+    PKEY_Device_DeviceDesc,
+    PKEY_DeviceInterface_FriendlyName
+    )
 
 # If you want to know that the volume/mute events are done by this program, you need to send a program specific guid when creating the AudioEndpoints object.
 from comtypes import GUID
