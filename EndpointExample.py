@@ -2,11 +2,15 @@
 from __future__ import print_function, unicode_literals
 
 import AudioEndpointControl
-# DataFlow enumeration: The DataFlow enumeration defines constants that indicate the direction in which audio data flows between an audio endpoint device and an application.
+# DataFlow enumeration: The DataFlow enumeration defines constants that
+# indicate the direction in which audio data flows between an audio endpoint
+# device and an application.
 from AudioEndpointControl import Render, Capture, All
-# Role enumeration: The Role enumeration defines constants that indicate the role that the system has assigned to an audio endpoint device.
+# Role enumeration: The Role enumeration defines constants that indicate the
+# role that the system has assigned to an audio endpoint device.
 from AudioEndpointControl import Console, Multimedia, Communications
-# DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the current state of an audio endpoint device.
+# DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the
+# current state of an audio endpoint device.
 from AudioEndpointControl import (
     DEVICE_STATE_ACTIVE,
     DEVICE_STATE_DISABLED,
@@ -14,7 +18,8 @@ from AudioEndpointControl import (
     DEVICE_STATE_UNPLUGGED,
     DEVICE_STATEMASK_ALL
     )
-# Each PKEY_Xxx property identifier in the following list is a constant of type PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h.
+# Each PKEY_Xxx property identifier in the following list is a constant of type
+# PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h.
 # All audio endpoint devices have these three device properties.
 from AudioEndpointControl import (
     PKEY_Device_FriendlyName,

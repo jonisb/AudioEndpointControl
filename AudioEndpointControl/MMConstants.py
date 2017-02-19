@@ -142,6 +142,10 @@ PKEY_DeviceInterface_FriendlyName = PROPERTYKEY(
 # that corresponds to a particular ENDPOINT_HARDWARE_SUPPORT_XXX constant is
 # set in the mask, then the meaning is that the function represented by that
 # constant is implemented in hardware by the device.
-ENDPOINT_HARDWARE_SUPPORT_VOLUME = 0x00000001  # The audio endpoint device supports a hardware volume control.
-ENDPOINT_HARDWARE_SUPPORT_MUTE = 0x00000002  # The audio endpoint device supports a hardware mute control.
-ENDPOINT_HARDWARE_SUPPORT_METER = 0x00000004  # The audio endpoint device supports a hardware peak meter.
+
+# The audio endpoint device supports a hardware volume control.
+ENDPOINT_HARDWARE_SUPPORT_VOLUME = 0x00000001
+# The audio endpoint device supports a hardware mute control.
+ENDPOINT_HARDWARE_SUPPORT_MUTE = 0x00000002
+# The audio endpoint device supports a hardware peak meter.
+ENDPOINT_HARDWARE_SUPPORT_METER = 0x00000004
