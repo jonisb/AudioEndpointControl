@@ -105,9 +105,67 @@ class TestAudioEndpoints(unittest.TestCase):
             self.AudioDevices.RegisterCallback(None)
         with self.assertRaises(Exception):
             self.AudioDevices.UnregisterCallback()
+
+        import Queue
+        NotificationQueue = Queue.Queue()
+
+        class MMNotificationClient(object):
+            def OnDefaultDeviceChanged(self, flow, role, AudioDevice):
+                NotificationQueue.put_nowait((self, flow, role, AudioDevice))
+
         self.assertEqual(self.AudioDevices.RegisterCallback(
-            type(str("MMNotificationClient"), (), {})()), None)
+            MMNotificationClient()), None)
+
+        import time
+        time.sleep(1)
+        self.AudioDevices.SetDefault(self.AudioDevices.GetDefault())
+        time.sleep(1)
+
         self.assertEqual(self.AudioDevices.UnregisterCallback(), None)
+
+        class MMNotificationClientTest(object):
+            def OnDeviceStateChanged(self, AudioDevice, NewState):
+                pass
+
+            def OnDeviceRemoved(self, AudioDevice):
+                pass
+
+            def OnDeviceAdded(self, AudioDevice):
+                pass
+
+            def OnDefaultDeviceChanged(self, flow, role, AudioDevice):
+                pass
+
+            def OnPropertyValueChanged(self, AudioDevice, key):
+                pass
+
+        from AudioEndpointControl.Notifications import CMMNotificationClient
+
+        callback = CMMNotificationClient(type(str("MMNotificationClient"), (), {})(), self.AudioDevices)
+
+        self.assertEqual(callback.OnDeviceStateChanged(None, self.AudioDevices.GetDefault().getId(), int(self.AudioEndpointControl.DEVICE_STATE_ACTIVE)), None)
+        self.assertEqual(callback.OnDeviceRemoved(None, self.AudioDevices.GetDefault().getId()), None)
+        self.assertEqual(callback.OnDeviceAdded(None, self.AudioDevices.GetDefault().getId()), None)
+        self.assertEqual(callback.OnDefaultDeviceChanged(None, int(self.AudioEndpointControl.Render), int(self.AudioEndpointControl.Console), self.AudioDevices.GetDefault().getId()), None)
+        self.assertEqual(callback.OnPropertyValueChanged(None, self.AudioDevices.GetDefault().getId(), None), None)
+
+        callback = CMMNotificationClient(MMNotificationClientTest(), self.AudioDevices)
+
+        item = NotificationQueue.get(True, 30)
+        self.assertEqual(int(item[1]), int(self.AudioEndpointControl.Render))
+        self.assertEqual(int(item[2]), int(self.AudioEndpointControl.Console))
+        self.assertEqual(item[3].getId(), self.AudioDevices.GetDefault().getId())
+        self.assertEqual(callback.OnDefaultDeviceChanged(None, int(item[1]), int(item[2]), item[3].getId()), None)
+        NotificationQueue.task_done()
+
+        item = NotificationQueue.get(True, 30)
+        self.assertEqual(int(item[1]), int(self.AudioEndpointControl.Render))
+        self.assertEqual(int(item[2]), int(self.AudioEndpointControl.Multimedia))
+        self.assertEqual(item[3].getId(), self.AudioDevices.GetDefault().getId())
+        self.assertEqual(callback.OnDefaultDeviceChanged(None, int(item[1]), int(item[2]), item[3].getId()), None)
+        NotificationQueue.task_done()
+
+        NotificationQueue.join()
 
 
 class TestAudioEndpoint(unittest.TestCase):
@@ -155,10 +213,54 @@ class TestAudioEndpoint(unittest.TestCase):
             self.AudioDevice.RegisterControlChangeNotify(None)
         with self.assertRaises(Exception):
             self.AudioDevice.UnregisterControlChangeNotify()
+
+        import Queue
+        NotificationQueue = Queue.Queue()
+
+        import ctypes
+        import copy
+        class pNotifyClass(object):
+            def __init__(self, cNotify):
+                class contentsClass(object):
+                    pass
+                self.contents = contentsClass()
+                self.contents.guidEventContext = copy.copy(cNotify.EventContext)
+                self.contents.bMuted = cNotify.Muted
+                self.contents.fMasterVolume = cNotify.MasterVolume
+                self.contents.nChannels = cNotify.Channels
+                self.contents.afChannelVolumes = (ctypes.c_float * len(cNotify.ChannelVolumes))(*cNotify.ChannelVolumes)
+
+        class AudioEndpointVolumeCallback(object):
+            def OnNotify(self, Notify, AudioDevice):
+                NotificationQueue.put_nowait((pNotifyClass(Notify), AudioDevice))
+
         self.assertEqual(self.AudioDevice.RegisterControlChangeNotify(
-            type(str("AudioEndpointVolumeCallback"), (), {})()), None)
-        self.assertEqual(self.AudioDevice.UnregisterControlChangeNotify(),
-                         None)
+            AudioEndpointVolumeCallback()), None)
+
+        SaveOld = float(self.AudioDevice.volume)
+
+        import time
+        time.sleep(1)
+        self.AudioDevice.volume = SaveOld / 2
+        time.sleep(1)
+
+        self.assertEqual(self.AudioDevice.UnregisterControlChangeNotify(), None)
+        self.AudioDevice.volume = SaveOld
+
+        item = NotificationQueue.get(True, 30)
+        self.assertEqual(item[0].contents.guidEventContext, self.AudioDevices.EventContext)
+        self.assertEqual(item[1].getId(), self.AudioDevices.GetDefault().getId())
+
+        class AudioEndpointVolumeCallbackTest(object):
+            def OnNotify(self, Notify, AudioDevice):
+                pass
+
+        from AudioEndpointControl.Notifications import CAudioEndpointVolumeCallback
+
+        callback = CAudioEndpointVolumeCallback(AudioEndpointVolumeCallbackTest(), self.AudioDevices.GetDefault())
+        self.assertEqual(callback.OnNotify(None, item[0]), None)
+
+        NotificationQueue.task_done()
 
 
 class TestAudioVolume(unittest.TestCase):
