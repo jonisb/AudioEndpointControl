@@ -30,15 +30,20 @@ class cNotify(object):  # TODO: Missing class docstring (missing-docstring)
 
 
 # TODO: Missing class docstring (missing-docstring)
-class CAudioEndpointVolumeCallback(_COMObject):
-    _com_interfaces_ = [IAudioEndpointVolumeCallback]
-
-    def __init__(self, Callback, endpoint):
+class CallbackBaseClass(_COMObject):
+    def __init__(self, Callback):
         if Callback is None:
             raise Exception("Callback object required, got:", repr(Callback))
         self._Callback = Callback
-        self._endpoint = endpoint
         _COMObject.__init__(self)
+
+
+class CAudioEndpointVolumeCallback(CallbackBaseClass):
+    _com_interfaces_ = [IAudioEndpointVolumeCallback]
+
+    def __init__(self, Callback, endpoint):
+        CallbackBaseClass.__init__(self, Callback)
+        self._endpoint = endpoint
 
     def OnNotify(self, this, pNotify):  # TODO: Missing method docstring
         try:
@@ -47,15 +52,12 @@ class CAudioEndpointVolumeCallback(_COMObject):
             pass
 
 
-class CMMNotificationClient(_COMObject):  # TODO: Missing class docstring
+class CMMNotificationClient(CallbackBaseClass):  # TODO: Missing class docstring
     _com_interfaces_ = [IMMNotificationClient]
 
     def __init__(self, Callback, endpoints):
-        if Callback is None:
-            raise Exception("Callback object required, got:", repr(Callback))
+        CallbackBaseClass.__init__(self, Callback)
         self._AudioDevices = endpoints
-        self._Callback = Callback
-        _COMObject.__init__(self)
 
     def OnDeviceStateChanged(self, this, pwstrDeviceId, dwNewState):
         # TODO: Missing method docstring (missing-docstring)
