@@ -7,15 +7,15 @@ import unittest
 class TestConstants(unittest.TestCase):
 
     def test_init(self):
-        from AudioEndpointControl.MMConstants import Render, Capture, All
-        from AudioEndpointControl.MMConstants import (Console, Multimedia,
-                                                      Communications)
-        from AudioEndpointControl.MMConstants import (DEVICE_STATE_ACTIVE,
-                                                      DEVICE_STATE_DISABLED,
-                                                      DEVICE_STATE_NOTPRESENT,
-                                                      DEVICE_STATE_UNPLUGGED,
-                                                      DEVICE_STATEMASK_ALL)
-#        from AudioEndpointControl.MMConstants import (
+        from AudioEndpointControl import Render, Capture, All
+        from AudioEndpointControl import (Console, Multimedia,
+                                          Communications)
+        from AudioEndpointControl import (DEVICE_STATE_ACTIVE,
+                                          DEVICE_STATE_DISABLED,
+                                          DEVICE_STATE_NOTPRESENT,
+                                          DEVICE_STATE_UNPLUGGED,
+                                          DEVICE_STATEMASK_ALL)
+#        from AudioEndpointControl import (
 #            PKEY_Device_FriendlyName,
 #            PKEY_Device_DeviceDesc,
 #            PKEY_DeviceInterface_FriendlyName)
@@ -41,8 +41,10 @@ class TestAudioEndpoints(unittest.TestCase):
 
     def setUp(self):
         import AudioEndpointControl
+        from AudioEndpointControl.AudioEndpoints import AudioEndpoint
         self.AudioEndpointControl = AudioEndpointControl
-        self.AudioDevices = AudioEndpointControl.AudioEndpoints()
+        self.AudioEndpoint = AudioEndpoint
+        self.AudioDevices = self.AudioEndpointControl.AudioEndpoints()
 
     def test_init(self):
         self.assertEqual(type(self.AudioDevices),
@@ -50,34 +52,34 @@ class TestAudioEndpoints(unittest.TestCase):
 
     def test_GetDefault(self):
         self.assertEqual(type(self.AudioDevices.GetDefault()),
-                         self.AudioEndpointControl.AudioEndpoint)
+                         self.AudioEndpoint)
 
     def test_SetDefault(self):
         self.assertEqual(
             type(self.AudioDevices.SetDefault(
                 self.AudioDevices.GetDefault())),
-            self.AudioEndpointControl.AudioEndpoint)
+            self.AudioEndpoint)
 
     def test_Methods(self):
         self.assertEqual(type(str(self.AudioDevices)), str)
         self.assertEqual(type(len(self.AudioDevices)), int)
         self.assertEqual(
             type(self.AudioDevices(self.AudioDevices.GetDefault().getId())),
-            self.AudioEndpointControl.AudioEndpoint)
+            self.AudioEndpoint)
         self.assertEqual(
             type(self.AudioDevices(self.AudioDevices.GetDefault().getName())),
-            self.AudioEndpointControl.AudioEndpoint)
+            self.AudioEndpoint)
 
         from _ctypes import COMError
         with self.assertRaises(COMError):
             self.AudioDevices("Wrong number")
 
         # TODO: test methods after changing these settings
-        from AudioEndpointControl.MMConstants import (DEVICE_STATE_ACTIVE,
-                                                      DEVICE_STATE_DISABLED,
-                                                      DEVICE_STATE_NOTPRESENT,
-                                                      DEVICE_STATE_UNPLUGGED,
-                                                      DEVICE_STATEMASK_ALL)
+        from AudioEndpointControl import (DEVICE_STATE_ACTIVE,
+                                          DEVICE_STATE_DISABLED,
+                                          DEVICE_STATE_NOTPRESENT,
+                                          DEVICE_STATE_UNPLUGGED,
+                                          DEVICE_STATEMASK_ALL)
         for state in (
                 DEVICE_STATE_ACTIVE,
                 DEVICE_STATE_DISABLED,
@@ -87,7 +89,7 @@ class TestAudioEndpoints(unittest.TestCase):
             self.AudioDevices.ChangeFilter(DEVICE_STATE=state)
             self.assertEqual(self.AudioDevices.DEVICE_STATE, state)
 
-        from AudioEndpointControl.MMConstants import (
+        from AudioEndpointControl import (
             PKEY_Device_FriendlyName,
             PKEY_Device_DeviceDesc,
             PKEY_DeviceInterface_FriendlyName)
@@ -120,7 +122,7 @@ class TestAudioEndpoint(unittest.TestCase):
         pass
 
     def test_isDefault(self):
-        from AudioEndpointControl.MMConstants import Console, Render
+        from AudioEndpointControl import Console, Render
         self.assertEqual(self.AudioDevice.isDefault(
             role=Console, dataFlow=Render), True)
 
@@ -163,13 +165,15 @@ class TestAudioVolume(unittest.TestCase):
 
     def setUp(self):
         import AudioEndpointControl
+        from AudioEndpointControl.AudioEndpoints import AudioVolume
         self.AudioEndpointControl = AudioEndpointControl
+        self.AudioVolume = AudioVolume
         self.AudioDevices = AudioEndpointControl.AudioEndpoints()
         self.AudioDevice = self.AudioDevices.GetDefault()
 
     def test_init(self):
         self.assertEqual(type(self.AudioDevice.volume),
-                         self.AudioEndpointControl.AudioVolume)
+                         self.AudioVolume)
 
     def test_Mute(self):
         self.assertEqual(type(self.AudioDevice.volume.Mute), bool)
