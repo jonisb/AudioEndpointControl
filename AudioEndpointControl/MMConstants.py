@@ -109,9 +109,14 @@ Device_StateType = _CreateValueType(
 # The storage-access mode. This parameter specifies whether to open the
 # property store in read mode, write mode, or read/write mode. Set this
 # parameter to one of the following STGM constants:
-STGM_READ = 0x00000000
-STGM_WRITE = 0x00000001
-STGM_READWRITE = 0x00000002
+STGMType = _CreateValueType(
+    'STGMType',
+    {
+        0x00000000: 'STGM_READ',
+        0x00000001: 'STGM_WRITE',
+        0x00000002: 'STGM_READWRITE',
+    }
+)
 
 # Each PKEY_Xxx property identifier in the following list is a constant of
 # type PROPERTYKEY that is defined in header file

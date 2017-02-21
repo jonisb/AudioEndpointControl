@@ -18,6 +18,8 @@ class TestConstants(unittest.TestCase):
                                           DEVICE_STATE_NOTPRESENT,
                                           DEVICE_STATE_UNPLUGGED,
                                           DEVICE_STATEMASK_ALL)
+        from AudioEndpointControl.MMConstants import (STGM_READ, STGM_WRITE,
+                                                      STGM_READWRITE)
         from AudioEndpointControl.MMConstants import PROPERTYKEY
         from AudioEndpointControl import (Device_FriendlyName,
                                           Device_DeviceDesc,
@@ -49,6 +51,13 @@ class TestConstants(unittest.TestCase):
                          b'DEVICE_STATE_UNPLUGGED')
         self.assertEqual(int(DEVICE_STATEMASK_ALL), 0x0000000F)
         self.assertEqual(str(DEVICE_STATEMASK_ALL), b'DEVICE_STATEMASK_ALL')
+
+        self.assertEqual(int(STGM_READ), 0x00000000)
+        self.assertEqual(str(STGM_READ), b'STGM_READ')
+        self.assertEqual(int(STGM_WRITE), 0x00000001)
+        self.assertEqual(str(STGM_WRITE), b'STGM_WRITE')
+        self.assertEqual(int(STGM_READWRITE), 0x00000002)
+        self.assertEqual(str(STGM_READWRITE), b'STGM_READWRITE')
 
         self.assertEqual(type(Device_FriendlyName), PROPERTYKEY)
         self.assertEqual(type(Device_DeviceDesc), PROPERTYKEY)
