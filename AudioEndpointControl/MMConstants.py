@@ -18,11 +18,9 @@ try:
         eRender,
         eCapture,
         eAll,
-        EDataFlow_enum_count,
         eConsole,
         eMultimedia,
         eCommunications,
-        ERole_enum_count
     )
 except ImportError:
     from comtypes.client import GetModule
@@ -32,11 +30,9 @@ except ImportError:
         eRender,
         eCapture,
         eAll,
-        EDataFlow_enum_count,
         eConsole,
         eMultimedia,
         eCommunications,
-        ERole_enum_count
     )
 
 PROPERTYKEY = _tagpropertykey
@@ -52,13 +48,15 @@ class _ValueTypeClass(object):
     def __int__(self):
         return self._value
 
+    def __or__(self, other):
+        return self.__class__(int(self) | int(other))
+
+    def __eq__(self, other):
+        return self._value == other._value
+
 
 def _CreateValueType(Name, ValueMap):
-    """ """  # TODO
     ValueType = type(str(Name), (_ValueTypeClass,), {'_valueMap': ValueMap})
-
-    for _value, _name in ValueMap.iteritems():
-        globals()[_name] = ValueType(_value)
 
     return ValueType
 
@@ -72,9 +70,12 @@ DataFlowType = _CreateValueType(
         eRender: 'Render',
         eCapture: 'Capture',
         eAll: 'All',
-        EDataFlow_enum_count: 'DataFlow_enum_count'
     }
 )
+
+Render = DataFlowType(eRender)
+Capture = DataFlowType(eCapture)
+All = DataFlowType(eAll)
 
 # Role enumeration: The RoleType class defines constants that indicate the role
 # that the system has assigned to an audio endpoint device.
@@ -84,9 +85,12 @@ RoleType = _CreateValueType(
         eConsole: 'Console',
         eMultimedia: 'Multimedia',
         eCommunications: 'Communications',
-        ERole_enum_count: 'Role_enum_count'
     }
 )
+
+Console = RoleType(eConsole)
+Multimedia = RoleType(eMultimedia)
+Communications = RoleType(eCommunications)
 
 # DEVICE_STATE_XXX Constants: The DEVICE_STATE_XXX constants indicate the
 # current state of an audio endpoint device.
@@ -100,6 +104,12 @@ Device_StateType = _CreateValueType(
         0x0000000F: 'DEVICE_STATEMASK_ALL'
     }
 )
+
+DEVICE_STATE_ACTIVE = Device_StateType(0x00000001)
+DEVICE_STATE_DISABLED = Device_StateType(0x00000002)
+DEVICE_STATE_NOTPRESENT = Device_StateType(0x00000004)
+DEVICE_STATE_UNPLUGGED = Device_StateType(0x00000008)
+DEVICE_STATEMASK_ALL = Device_StateType(0x0000000F)
 
 # The STGM constants are flags that indicate conditions for creating and
 # deleting the object and access modes for the object. The STGM constants
@@ -117,6 +127,10 @@ STGMType = _CreateValueType(
         0x00000002: 'STGM_READWRITE',
     }
 )
+
+STGM_READ = STGMType(0x00000000)
+STGM_WRITE = STGMType(0x00000001)
+STGM_READWRITE = STGMType(0x00000002)
 
 # Each PKEY_Xxx property identifier in the following list is a constant of
 # type PROPERTYKEY that is defined in header file

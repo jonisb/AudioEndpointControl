@@ -86,6 +86,10 @@ class TestAudioEndpoints(unittest.TestCase):
         self.assertEqual(type(self.AudioEndpointControl.AudioEndpoints(
             DEVICE_STATE=DEVICE_STATEMASK_ALL)),
                          self.AudioEndpointControl.AudioEndpoints)
+        self.assertEqual(type(self.AudioEndpointControl.AudioEndpoints(
+            DEVICE_STATE=DEVICE_STATE_ACTIVE | DEVICE_STATE_DISABLED
+            | DEVICE_STATE_NOTPRESENT | DEVICE_STATE_UNPLUGGED
+            )), self.AudioEndpointControl.AudioEndpoints)
 
         from AudioEndpointControl import (Device_FriendlyName,
                                           Device_DeviceDesc,
