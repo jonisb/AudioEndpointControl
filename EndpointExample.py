@@ -22,10 +22,9 @@ from AudioEndpointControl import (
 # PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h.
 # All audio endpoint devices have these three device properties.
 from AudioEndpointControl import (
-    PKEY_Device_FriendlyName,
-    PKEY_Device_DeviceDesc,
-    PKEY_DeviceInterface_FriendlyName
-    )
+    Device_FriendlyName,
+    Device_DeviceDesc,
+    DeviceInterface_FriendlyName)
 
 # If you want to know that the volume/mute events are done by this program, you need to send a program specific guid when creating the AudioEndpoints object.
 from comtypes import GUID
@@ -66,7 +65,7 @@ class AudioEndpointVolumeCallback(object):
 
 if __name__ == '__main__':
     print("When creating the AudioEndpoints object you can specify what endpoint(s) you want shown (ACTIVE, DISABLED, NOTPRESENT, UNPLUGGED, ALL).\n")
-    AudioDevices = AudioEndpointControl.AudioEndpoints(DEVICE_STATE=DEVICE_STATE_ACTIVE, PKEY_Device=PKEY_Device_FriendlyName, EventContext=AppID)
+    AudioDevices = AudioEndpointControl.AudioEndpoints(DEVICE_STATE=DEVICE_STATE_ACTIVE, PKEY_Device=Device_FriendlyName, EventContext=AppID)
 
     print("Using str() or print on a AudioEndpoint or AudioEndpoints object results in the text name of the endpoint.\n")
     print("Number of active audio endpoints: {0}".format(len(AudioDevices)))
