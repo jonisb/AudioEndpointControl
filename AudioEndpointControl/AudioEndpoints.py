@@ -47,18 +47,7 @@ def _GetValue(value):
     return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.cVal
 
 
-def _RegisterCallback(Function, CallbackClass, Callback, Endpoint, Msg):
-    _callback = CallbackClass(Callback, Endpoint)
-    try:
-        hr = Function(_callback)
-        if hr:
-            raise Exception("{0} returned:".format(Msg), FormatMessage(hr))
-    except COMError as e:
-        raise Exception("{0} error:".format(Msg), e.text)
-    return _callback
-
-
-def _UnregisterCallback(Function, Callback, Msg):
+def _FunctionCallback(Function, Callback, Msg):
     try:
         hr = Function(Callback)
         if hr:
@@ -167,14 +156,14 @@ class AudioVolume(object):
 
     def RegisterCallback(self, callback):
         """Registers the endpoint's notification callback interface."""
-        self._callback = _RegisterCallback(
+        self._callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
+        _FunctionCallback(
             self._AudioEndpointVolume.RegisterControlChangeNotify,
-            CAudioEndpointVolumeCallback, callback, self.endpoint,
-            "RegisterControlChangeNotify")
+            self._callback, "RegisterControlChangeNotify")
 
     def UnregisterCallback(self):
         """Unregister the endpoint's volume notification callback interface."""
-        _UnregisterCallback(
+        _FunctionCallback(
             self._AudioEndpointVolume.UnregisterControlChangeNotify,
             self._callback, "UnregisterControlChangeNotify")
         self._callback = None
@@ -323,15 +312,15 @@ class AudioEndpoints(object):
         return OldDefault
 
     def RegisterCallback(self, callback):
-        """Registers endpoints notification callback interface."""
-        self._callback = _RegisterCallback(
-            self._DevEnum.RegisterEndpointNotificationCallback,
-            CMMNotificationClient, callback, self,
-            "RegisterEndpointNotificationCallback")
+        """Register endpoints notification callback interface."""
+        self._callback = CMMNotificationClient(callback, self)
+        _FunctionCallback(self._DevEnum.RegisterEndpointNotificationCallback,
+                          self._callback,
+                          "RegisterEndpointNotificationCallback")
 
     def UnregisterCallback(self):
         """Unregister endpoints notification callback interface."""
-        _UnregisterCallback(
+        _FunctionCallback(
             self._DevEnum.UnregisterEndpointNotificationCallback,
             self._callback, "UnregisterEndpointNotificationCallback")
         self._callback = None
