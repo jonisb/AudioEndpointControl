@@ -7,7 +7,10 @@ import unittest
 class TestConstants(unittest.TestCase):
 
     def test_init(self):
+        from AudioEndpointControl.MMConstants import eRender, eCapture, eAll
         from AudioEndpointControl import Render, Capture, All
+        from AudioEndpointControl.MMConstants import (eConsole, eMultimedia,
+                                          eCommunications)
         from AudioEndpointControl import (Console, Multimedia,
                                           Communications)
         from AudioEndpointControl import (DEVICE_STATE_ACTIVE,
@@ -15,26 +18,41 @@ class TestConstants(unittest.TestCase):
                                           DEVICE_STATE_NOTPRESENT,
                                           DEVICE_STATE_UNPLUGGED,
                                           DEVICE_STATEMASK_ALL)
-#        from AudioEndpointControl import (
-#            PKEY_Device_FriendlyName,
-#            PKEY_Device_DeviceDesc,
-#            PKEY_DeviceInterface_FriendlyName)
+        from AudioEndpointControl.MMConstants import PROPERTYKEY
+        from AudioEndpointControl import (Device_FriendlyName,
+                                          Device_DeviceDesc,
+                                          DeviceInterface_FriendlyName)
 
+        self.assertEqual(int(Render), eRender)
         self.assertEqual(str(Render), b'Render')
+        self.assertEqual(int(Capture), eCapture)
         self.assertEqual(str(Capture), b'Capture')
+        self.assertEqual(int(All), eAll)
         self.assertEqual(str(All), b'All')
 
+        self.assertEqual(int(Console), eConsole)
         self.assertEqual(str(Console), b'Console')
+        self.assertEqual(int(Multimedia), eMultimedia)
         self.assertEqual(str(Multimedia), b'Multimedia')
+        self.assertEqual(int(Communications), eCommunications)
         self.assertEqual(str(Communications), b'Communications')
 
+        self.assertEqual(int(DEVICE_STATE_ACTIVE), 0x00000001)
         self.assertEqual(str(DEVICE_STATE_ACTIVE), b'DEVICE_STATE_ACTIVE')
+        self.assertEqual(int(DEVICE_STATE_DISABLED), 0x00000002)
         self.assertEqual(str(DEVICE_STATE_DISABLED), b'DEVICE_STATE_DISABLED')
+        self.assertEqual(int(DEVICE_STATE_NOTPRESENT), 0x00000004)
         self.assertEqual(str(DEVICE_STATE_NOTPRESENT),
                          b'DEVICE_STATE_NOTPRESENT')
+        self.assertEqual(int(DEVICE_STATE_UNPLUGGED), 0x00000008)
         self.assertEqual(str(DEVICE_STATE_UNPLUGGED),
                          b'DEVICE_STATE_UNPLUGGED')
+        self.assertEqual(int(DEVICE_STATEMASK_ALL), 0x0000000F)
         self.assertEqual(str(DEVICE_STATEMASK_ALL), b'DEVICE_STATEMASK_ALL')
+
+        self.assertEqual(type(Device_FriendlyName), PROPERTYKEY)
+        self.assertEqual(type(Device_DeviceDesc), PROPERTYKEY)
+        self.assertEqual(type(DeviceInterface_FriendlyName), PROPERTYKEY)
 
 
 class TestAudioEndpoints(unittest.TestCase):
@@ -48,6 +66,32 @@ class TestAudioEndpoints(unittest.TestCase):
 
     def test_init(self):
         self.assertEqual(type(self.AudioDevices),
+                         self.AudioEndpointControl.AudioEndpoints)
+
+        from AudioEndpointControl import (DEVICE_STATE_ACTIVE,
+                                          DEVICE_STATE_DISABLED,
+                                          DEVICE_STATE_NOTPRESENT,
+                                          DEVICE_STATE_UNPLUGGED,
+                                          DEVICE_STATEMASK_ALL)
+
+        self.assertEqual(type(self.AudioEndpointControl.AudioEndpoints(
+            DEVICE_STATE=DEVICE_STATEMASK_ALL)),
+                         self.AudioEndpointControl.AudioEndpoints)
+
+        from AudioEndpointControl import (Device_FriendlyName,
+                                          Device_DeviceDesc,
+                                          DeviceInterface_FriendlyName)
+
+        self.assertEqual(type(self.AudioEndpointControl.AudioEndpoints(
+            PKEY_Device=Device_FriendlyName)),
+                         self.AudioEndpointControl.AudioEndpoints)
+
+        self.assertEqual(type(self.AudioEndpointControl.AudioEndpoints(
+            PKEY_Device=Device_DeviceDesc)),
+                         self.AudioEndpointControl.AudioEndpoints)
+
+        self.assertEqual(type(self.AudioEndpointControl.AudioEndpoints(
+            PKEY_Device=DeviceInterface_FriendlyName)),
                          self.AudioEndpointControl.AudioEndpoints)
 
     def test_GetDefault(self):
