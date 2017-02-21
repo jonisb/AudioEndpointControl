@@ -7,8 +7,8 @@ __all__ = (b"Render", b"Capture", b"All", b"Console",
            b"Multimedia", b"Communications", b"DEVICE_STATE_ACTIVE",
            b"DEVICE_STATE_DISABLED", b"DEVICE_STATE_NOTPRESENT",
            b"DEVICE_STATE_UNPLUGGED", b"DEVICE_STATEMASK_ALL",
-           b"PKEY_Device_FriendlyName", b"PKEY_Device_DeviceDesc",
-           b"PKEY_DeviceInterface_FriendlyName")
+           b"Device_FriendlyName", b"Device_DeviceDesc",
+           b"DeviceInterface_FriendlyName")
 
 from comtypes import GUID as _GUID
 
@@ -117,11 +117,11 @@ STGM_READWRITE = 0x00000002
 # type PROPERTYKEY that is defined in header file
 # Functiondiscoverykeys_devpkey.h. All audio endpoint devices have these
 # three device properties.
-PKEY_Device_FriendlyName = PROPERTYKEY(
+Device_FriendlyName = PROPERTYKEY(
     _GUID('{A45C254E-DF1C-4EFD-8020-67D146A850E0}'), 14)
-PKEY_Device_DeviceDesc = PROPERTYKEY(
+Device_DeviceDesc = PROPERTYKEY(
     _GUID('{A45C254E-DF1C-4EFD-8020-67D146A850E0}'), 2)
-PKEY_DeviceInterface_FriendlyName = PROPERTYKEY(
+DeviceInterface_FriendlyName = PROPERTYKEY(
     _GUID('{026E516E-B814-414B-83CD-856D6FEF4822}'), 2)
 
 

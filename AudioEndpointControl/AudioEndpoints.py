@@ -11,8 +11,7 @@ from win32api import FormatMessage  # pylint: disable=no-name-in-module
 from comtypes import CoCreateInstance, CLSCTX_INPROC_SERVER, CLSCTX_ALL, GUID
 
 from .MMConstants import (  # pylint: disable=no-name-in-module
-    Render, Console, DEVICE_STATE_ACTIVE, PKEY_Device_FriendlyName, STGM_READ
-)
+    Render, Console, DEVICE_STATE_ACTIVE, Device_FriendlyName, STGM_READ)
 try:
     # Try to import local .MMDeviceAPILib for Python 2.6 compatibility
     from .MMDeviceAPILib import (
@@ -229,13 +228,8 @@ class AudioVolume(object):
 
 class AudioEndpoint(object):
     """Wrapper for a single COM endpoint."""
-    def __init__(
-            self,
-            endpoint,
-            endpoints,
-            PKEY_Device=PKEY_Device_FriendlyName,
-            EventContext=None
-    ):
+    def __init__(self, endpoint, endpoints, PKEY_Device=Device_FriendlyName,
+                 EventContext=None):
         """Initializes an endpoint object."""
         self._endpoint = endpoint
         self.endpoints = endpoints
@@ -300,12 +294,9 @@ class AudioEndpoint(object):
 class AudioEndpoints(object):
     """The main class to access all endpoints in the system"""
 
-    def __init__(
-            self,
-            DEVICE_STATE=DEVICE_STATE_ACTIVE,
-            PKEY_Device=PKEY_Device_FriendlyName,
-            EventContext=GUID.create_new()
-    ):
+    def __init__(self, DEVICE_STATE=DEVICE_STATE_ACTIVE,
+                 PKEY_Device=Device_FriendlyName,
+                 EventContext=GUID.create_new()):
         self.DEVICE_STATE = DEVICE_STATE
         self.PKEY_Device = PKEY_Device
         self.EventContext = EventContext

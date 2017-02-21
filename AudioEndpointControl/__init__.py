@@ -7,8 +7,8 @@ __all__ = (b"AudioEndpoints", b"Render", b"Capture", b"All", b"Console",
            b"Multimedia", b"Communications", b"DEVICE_STATE_ACTIVE",
            b"DEVICE_STATE_DISABLED", b"DEVICE_STATE_NOTPRESENT",
            b"DEVICE_STATE_UNPLUGGED", b"DEVICE_STATEMASK_ALL",
-           b"PKEY_Device_FriendlyName", b"PKEY_Device_DeviceDesc",
-           b"PKEY_DeviceInterface_FriendlyName")
+           b"Device_FriendlyName", b"Device_DeviceDesc",
+           b"DeviceInterface_FriendlyName")
 __version__ = '0.2a4'
 __author__ = 'Joni Borén'
 
@@ -33,7 +33,7 @@ from .MMConstants import (
 # PROPERTYKEY that is defined in header file Functiondiscoverykeys_devpkey.h.
 # All audio endpoint devices have these three device properties.
 from .MMConstants import (
-    PKEY_Device_FriendlyName,
-    PKEY_Device_DeviceDesc,
-    PKEY_DeviceInterface_FriendlyName
+    Device_FriendlyName,
+    Device_DeviceDesc,
+    DeviceInterface_FriendlyName
     )

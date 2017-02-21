@@ -90,13 +90,13 @@ class TestAudioEndpoints(unittest.TestCase):
             self.assertEqual(self.AudioDevices.DEVICE_STATE, state)
 
         from AudioEndpointControl import (
-            PKEY_Device_FriendlyName,
-            PKEY_Device_DeviceDesc,
-            PKEY_DeviceInterface_FriendlyName)
+            Device_FriendlyName,
+            Device_DeviceDesc,
+            DeviceInterface_FriendlyName)
         for pkey in (
-                PKEY_Device_FriendlyName,
-                PKEY_Device_DeviceDesc,
-                PKEY_DeviceInterface_FriendlyName):
+                Device_FriendlyName,
+                Device_DeviceDesc,
+                DeviceInterface_FriendlyName):
             self.AudioDevices.ChangeFilter(PKEY_Device=pkey)
             self.assertEqual(self.AudioDevices.PKEY_Device, pkey)
 
