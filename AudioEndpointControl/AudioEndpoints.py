@@ -10,15 +10,14 @@ from win32api import FormatMessage  # pylint: disable=no-name-in-module
 
 from comtypes import CoCreateInstance, CLSCTX_INPROC_SERVER, CLSCTX_ALL, GUID
 
-from .MMConstants import (  # pylint: disable=no-name-in-module
-    Render, Console, DEVICE_STATE_ACTIVE, Device_FriendlyName, STGM_READ)
+# pylint: disable=no-name-in-module
+from .MMConstants import (Render, Console, DEVICE_STATE_ACTIVE,
+                          Device_FriendlyName, STGM_READ)
 try:
     # Try to import local .MMDeviceAPILib for Python 2.6 compatibility
-    from .MMDeviceAPILib import (
-        MMDeviceEnumerator as _MMDeviceEnumerator,
-        IMMDeviceEnumerator as _IMMDeviceEnumerator,
-        IMMNotificationClient
-    )
+    from .MMDeviceAPILib import (MMDeviceEnumerator as _MMDeviceEnumerator,
+                                 IMMDeviceEnumerator as _IMMDeviceEnumerator,
+                                 IMMNotificationClient)
 except ImportError:
     # Use comtypes to generate MMDeviceAPILib (Python 2.7+))
     from comtypes.client import GetModule
@@ -26,8 +25,7 @@ except ImportError:
     from comtypes.gen.MMDeviceAPILib import (
         MMDeviceEnumerator as _MMDeviceEnumerator,
         IMMDeviceEnumerator as _IMMDeviceEnumerator,
-        IMMNotificationClient
-    )
+        IMMNotificationClient)
 from .Notifications import CAudioEndpointVolumeCallback, CMMNotificationClient
 from .EndpointvolumeAPI import (IAudioEndpointVolume as _IAudioEndpointVolume,
                                 IID_IAudioEndpointVolume)
@@ -57,10 +55,8 @@ class AudioVolume(object):
         self.EventContext = EventContext
 
         self._AudioEndpointVolume = _POINTER(_IAudioEndpointVolume)(
-            endpoint._endpoint.Activate(
-                IID_IAudioEndpointVolume, CLSCTX_INPROC_SERVER, None
-            )
-        )
+            endpoint._endpoint.Activate(IID_IAudioEndpointVolume,
+                                        CLSCTX_INPROC_SERVER, None))
 
     def GetChannelCount(self):
         """Gets a count of the channels in the audio stream."""
@@ -91,8 +87,7 @@ class AudioVolume(object):
 
         if Scalar:
             return self._AudioEndpointVolume.GetChannelVolumeLevelScalar(
-                Channel-1
-            )
+                Channel-1)
 
         return self._AudioEndpointVolume.GetChannelVolumeLevel(Channel-1)
 
@@ -155,8 +150,7 @@ class AudioVolume(object):
         self._callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
         try:
             hr = self._AudioEndpointVolume.RegisterControlChangeNotify(
-                self._callback
-            )
+                self._callback)
             if hr:
                 raise Exception("RegisterControlChangeNotify returned:",
                                 FormatMessage(hr))
@@ -169,8 +163,7 @@ class AudioVolume(object):
         """
         try:
             hr = self._AudioEndpointVolume.UnregisterControlChangeNotify(
-                self._callback
-            )
+                self._callback)
             if hr:
                 raise Exception("UnregisterControlChangeNotify returned:",
                                 FormatMessage(hr))
@@ -235,10 +228,7 @@ class AudioEndpoint(object):
         self.endpoints = endpoints
         self.PKEY_Device = PKEY_Device
         self.EventContext = EventContext
-        self._AudioVolume = AudioVolume(
-            self,
-            self.EventContext
-        )
+        self._AudioVolume = AudioVolume(self, self.EventContext)
         self.RegisterControlChangeNotify = self._AudioVolume.\
             RegisterControlChangeNotify
         self.UnregisterControlChangeNotify = self._AudioVolume.\
@@ -300,22 +290,17 @@ class AudioEndpoints(object):
         self.DEVICE_STATE = DEVICE_STATE
         self.PKEY_Device = PKEY_Device
         self.EventContext = EventContext
-        self._DevEnum = CoCreateInstance(
-            _CLSID_MMDeviceEnumerator,
-            _IMMDeviceEnumerator,
-            CLSCTX_INPROC_SERVER
-        )
+        self._DevEnum = CoCreateInstance(_CLSID_MMDeviceEnumerator,
+                                         _IMMDeviceEnumerator,
+                                         CLSCTX_INPROC_SERVER)
         self._callback = None
         self._PolicyConfig = None
 
     # TODO: Missing class docstring (missing-docstring)
     def GetDefault(self, role=Console, dataFlow=Render):
-        return AudioEndpoint(
-            self._DevEnum.GetDefaultAudioEndpoint(dataFlow, role),
-            self,
-            self.PKEY_Device,
-            self.EventContext
-        )
+        return AudioEndpoint(self._DevEnum.GetDefaultAudioEndpoint(dataFlow,
+                                                                   role),
+                             self, self.PKEY_Device, self.EventContext)
 
     # TODO: Missing class docstring (missing-docstring)
     def SetDefault(self, endpoint, role=Console):
@@ -337,10 +322,12 @@ class AudioEndpoints(object):
             hr = self._DevEnum.RegisterEndpointNotificationCallback(
                 self._callback)
             if hr:
-                raise Exception("RegisterEndpointNotificationCallback returned:",
-                                FormatMessage(hr))
+                raise Exception(
+                    "RegisterEndpointNotificationCallback returned:",
+                    FormatMessage(hr))
         except COMError as e:
-            raise Exception("RegisterEndpointNotificationCallback error:", e.text)
+            raise Exception("RegisterEndpointNotificationCallback error:",
+                            e.text)
 
     def UnregisterCallback(self):
         """
@@ -350,21 +337,19 @@ class AudioEndpoints(object):
             hr = self._DevEnum.UnregisterEndpointNotificationCallback(
                 self._callback)
             if hr:
-                raise Exception("UnregisterEndpointNotificationCallback returned:",
-                                FormatMessage(hr))
+                raise Exception(
+                    "UnregisterEndpointNotificationCallback returned:",
+                    FormatMessage(hr))
         except COMError as e:
-            raise Exception("UnregisterEndpointNotificationCallback error:", e.text)
+            raise Exception("UnregisterEndpointNotificationCallback error:",
+                            e.text)
         else:
             self._callback = None
 
     def __call__(self, ID):
         try:
-            return AudioEndpoint(
-                self._DevEnum.GetDevice(ID),
-                self,
-                self.PKEY_Device,
-                self.EventContext
-            )
+            return AudioEndpoint(self._DevEnum.GetDevice(ID), self,
+                                 self.PKEY_Device, self.EventContext)
         except COMError:
             for endpoint in self:
                 if endpoint.getName() == ID:
@@ -382,21 +367,13 @@ class AudioEndpoints(object):
             self.PKEY_Device = PKEY_Device
 
     def __iter__(self, dataFlow=Render):
-        pEndpoints = self._DevEnum.EnumAudioEndpoints(
-            dataFlow, self.DEVICE_STATE
-        )
+        pEndpoints = self._DevEnum.EnumAudioEndpoints(dataFlow,
+                                                      self.DEVICE_STATE)
         for i in range(pEndpoints.GetCount()):
-            yield AudioEndpoint(
-                pEndpoints.Item(i),
-                self,
-                self.PKEY_Device,
-                self.EventContext
-            )
+            yield AudioEndpoint(pEndpoints.Item(i), self, self.PKEY_Device,
+                                self.EventContext)
 
     # pylint: disable=invalid-length-returned
     def __len__(self):
-        return int(
-            self._DevEnum.EnumAudioEndpoints(
-                Render, self.DEVICE_STATE
-            ).GetCount()
-        )
+        return int(self._DevEnum.EnumAudioEndpoints(
+            Render, self.DEVICE_STATE).GetCount())
