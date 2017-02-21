@@ -3,11 +3,16 @@
 from setuptools import setup
 
 PKG_NAME = "AudioEndpointControl"
-VERSION = "0.1a2"
+
+def get_version():
+    with open('AudioEndpointControl/__init__.py') as f:
+        for line in f:
+            if line.startswith('__version__'):
+                return eval(line.split('=')[-1])
 
 setup(
     name=PKG_NAME,
-    version=VERSION,
+    version=get_version(),
     author="jonisb",
     # author_email="",
     # maintainer="",
