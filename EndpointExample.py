@@ -115,7 +115,7 @@ if __name__ == '__main__':
                 endpoint = endpoints[-1]
         VolSave = endpoint.volume.Get()
         time.sleep(5)
-        endpoint.volume.Set(0)
+        endpoint.volume.Set(VolSave / 2)
         time.sleep(60)
     except KeyboardInterrupt:
         pass
