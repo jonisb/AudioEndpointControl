@@ -109,7 +109,7 @@ if __name__ == '__main__':
         endpoints = []
         for AudioDevice in AudioDevices:
             endpoints.append(AudioDevice)
-            endpoints[-1].RegisterControlChangeNotify(AudioEndpointVolumeCallback())
+            endpoints[-1].RegisterCallback(AudioEndpointVolumeCallback())
             if endpoints[-1].isDefault():
                 endpoint = endpoints[-1]
         VolSave = endpoint.volume.Get()
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     finally:
         print("Remember to unregister when you don't want notifications anymore.")
         for endpoint in endpoints:
-            endpoint.UnregisterControlChangeNotify()
+            endpoint.UnregisterCallback()
             if endpoint.isDefault():
                 endpoint.volume.Set(VolSave)
         print('and done.')

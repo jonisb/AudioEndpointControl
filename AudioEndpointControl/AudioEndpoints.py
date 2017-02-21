@@ -47,6 +47,26 @@ def _GetValue(value):
     return value.__MIDL____MIDL_itf_mmdeviceapi_0003_00850001.cVal
 
 
+def _RegisterCallback(Function, CallbackClass, Callback, Endpoint, Msg):
+    _callback = CallbackClass(Callback, Endpoint)
+    try:
+        hr = Function(_callback)
+        if hr:
+            raise Exception("{0} returned:".format(Msg), FormatMessage(hr))
+    except COMError as e:
+        raise Exception("{0} error:".format(Msg), e.text)
+    return _callback
+
+
+def _UnregisterCallback(Function, Callback, Msg):
+    try:
+        hr = Function(Callback)
+        if hr:
+            raise Exception("{0} returned:".format(Msg), FormatMessage(hr))
+    except COMError as e:
+        raise Exception("{0} error:".format(Msg), e.text)
+
+
 class AudioVolume(object):
     """Wrapper for volume related methods."""
     def __init__(self, endpoint, EventContext=None):
@@ -145,32 +165,19 @@ class AudioVolume(object):
         """
         return self._AudioEndpointVolume.QueryHardwareSupport()
 
-    def RegisterControlChangeNotify(self, callback):
-        """Registers a client's notification callback interface."""
-        self._callback = CAudioEndpointVolumeCallback(callback, self.endpoint)
-        try:
-            hr = self._AudioEndpointVolume.RegisterControlChangeNotify(
-                self._callback)
-            if hr:
-                raise Exception("RegisterControlChangeNotify returned:",
-                                FormatMessage(hr))
-        except COMError as e:
-            raise Exception("RegisterControlChangeNotify error:", e.text)
+    def RegisterCallback(self, callback):
+        """Registers the endpoint's notification callback interface."""
+        self._callback = _RegisterCallback(
+            self._AudioEndpointVolume.RegisterControlChangeNotify,
+            CAudioEndpointVolumeCallback, callback, self.endpoint,
+            "RegisterControlChangeNotify")
 
-    def UnregisterControlChangeNotify(self):
-        """
-        Deletes the registration of a client's notification callback interface.
-        """
-        try:
-            hr = self._AudioEndpointVolume.UnregisterControlChangeNotify(
-                self._callback)
-            if hr:
-                raise Exception("UnregisterControlChangeNotify returned:",
-                                FormatMessage(hr))
-        except COMError as e:
-            raise Exception("UnregisterControlChangeNotify error:", e.text)
-        else:
-            self._callback = None
+    def UnregisterCallback(self):
+        """Unregister the endpoint's volume notification callback interface."""
+        _UnregisterCallback(
+            self._AudioEndpointVolume.UnregisterControlChangeNotify,
+            self._callback, "UnregisterControlChangeNotify")
+        self._callback = None
 
     def __add__(self, other=1):
         for _ in range(other):
@@ -229,10 +236,10 @@ class AudioEndpoint(object):
         self.PKEY_Device = PKEY_Device
         self.EventContext = EventContext
         self._AudioVolume = AudioVolume(self, self.EventContext)
-        self.RegisterControlChangeNotify = self._AudioVolume.\
-            RegisterControlChangeNotify
-        self.UnregisterControlChangeNotify = self._AudioVolume.\
-            UnregisterControlChangeNotify
+        self.RegisterCallback = self._AudioVolume.\
+            RegisterCallback
+        self.UnregisterCallback = self._AudioVolume.\
+            UnregisterCallback
 
     @property
     def volume(self):  # TODO: Missing method docstring (missing-docstring)
@@ -316,35 +323,18 @@ class AudioEndpoints(object):
         return OldDefault
 
     def RegisterCallback(self, callback):
-        """Registers a client's notification callback interface."""
-        self._callback = CMMNotificationClient(callback, self)
-        try:
-            hr = self._DevEnum.RegisterEndpointNotificationCallback(
-                self._callback)
-            if hr:
-                raise Exception(
-                    "RegisterEndpointNotificationCallback returned:",
-                    FormatMessage(hr))
-        except COMError as e:
-            raise Exception("RegisterEndpointNotificationCallback error:",
-                            e.text)
+        """Registers endpoints notification callback interface."""
+        self._callback = _RegisterCallback(
+            self._DevEnum.RegisterEndpointNotificationCallback,
+            CMMNotificationClient, callback, self,
+            "RegisterEndpointNotificationCallback")
 
     def UnregisterCallback(self):
-        """
-        Deletes the registration of a client's notification callback interface.
-        """
-        try:
-            hr = self._DevEnum.UnregisterEndpointNotificationCallback(
-                self._callback)
-            if hr:
-                raise Exception(
-                    "UnregisterEndpointNotificationCallback returned:",
-                    FormatMessage(hr))
-        except COMError as e:
-            raise Exception("UnregisterEndpointNotificationCallback error:",
-                            e.text)
-        else:
-            self._callback = None
+        """Unregister endpoints notification callback interface."""
+        _UnregisterCallback(
+            self._DevEnum.UnregisterEndpointNotificationCallback,
+            self._callback, "UnregisterEndpointNotificationCallback")
+        self._callback = None
 
     def __call__(self, ID):
         try:

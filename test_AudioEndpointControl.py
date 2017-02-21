@@ -267,9 +267,9 @@ class TestAudioEndpoint(unittest.TestCase):
 
     def test_Notificatios(self):
         with self.assertRaises(Exception):
-            self.AudioDevice.RegisterControlChangeNotify(None)
+            self.AudioDevice.RegisterCallback(None)
         with self.assertRaises(Exception):
-            self.AudioDevice.UnregisterControlChangeNotify()
+            self.AudioDevice.UnregisterCallback()
 
         import Queue
         NotificationQueue = Queue.Queue()
@@ -291,7 +291,7 @@ class TestAudioEndpoint(unittest.TestCase):
             def OnNotify(self, Notify, AudioDevice):
                 NotificationQueue.put_nowait((pNotifyClass(Notify), AudioDevice))
 
-        self.assertEqual(self.AudioDevice.RegisterControlChangeNotify(
+        self.assertEqual(self.AudioDevice.RegisterCallback(
             AudioEndpointVolumeCallback()), None)
 
         SaveOld = float(self.AudioDevice.volume)
@@ -301,7 +301,7 @@ class TestAudioEndpoint(unittest.TestCase):
         self.AudioDevice.volume = SaveOld / 2
         time.sleep(1)
 
-        self.assertEqual(self.AudioDevice.UnregisterControlChangeNotify(), None)
+        self.assertEqual(self.AudioDevice.UnregisterCallback(), None)
         self.AudioDevice.volume = SaveOld
 
         item = NotificationQueue.get(True, 30)
