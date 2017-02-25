@@ -24,6 +24,10 @@ class TestConstants(unittest.TestCase):
         from AudioEndpointControl import (Device_FriendlyName,
                                           Device_DeviceDesc,
                                           DeviceInterface_FriendlyName)
+        from AudioEndpointControl.MMConstants import (
+            ENDPOINT_HARDWARE_SUPPORT_VOLUME,
+            ENDPOINT_HARDWARE_SUPPORT_MUTE,
+            ENDPOINT_HARDWARE_SUPPORT_METER)
 
         self.assertEqual(int(Render), eRender)
         self.assertEqual(str(Render), b'Render')
@@ -40,28 +44,37 @@ class TestConstants(unittest.TestCase):
         self.assertEqual(str(Communications), b'Communications')
 
         self.assertEqual(int(DEVICE_STATE_ACTIVE), 0x00000001)
-        self.assertEqual(str(DEVICE_STATE_ACTIVE), b'DEVICE_STATE_ACTIVE')
+        self.assertEqual(str(DEVICE_STATE_ACTIVE), b'Active')
         self.assertEqual(int(DEVICE_STATE_DISABLED), 0x00000002)
-        self.assertEqual(str(DEVICE_STATE_DISABLED), b'DEVICE_STATE_DISABLED')
+        self.assertEqual(str(DEVICE_STATE_DISABLED), b'Disabled')
         self.assertEqual(int(DEVICE_STATE_NOTPRESENT), 0x00000004)
-        self.assertEqual(str(DEVICE_STATE_NOTPRESENT),
-                         b'DEVICE_STATE_NOTPRESENT')
+        self.assertEqual(str(DEVICE_STATE_NOTPRESENT), b'Notpresent')
         self.assertEqual(int(DEVICE_STATE_UNPLUGGED), 0x00000008)
-        self.assertEqual(str(DEVICE_STATE_UNPLUGGED),
-                         b'DEVICE_STATE_UNPLUGGED')
+        self.assertEqual(str(DEVICE_STATE_UNPLUGGED), b'Unplugged')
         self.assertEqual(int(DEVICE_STATEMASK_ALL), 0x0000000F)
-        self.assertEqual(str(DEVICE_STATEMASK_ALL), b'DEVICE_STATEMASK_ALL')
+        self.assertEqual(str(DEVICE_STATEMASK_ALL),
+                         b'Unplugged, Active, Disabled, Notpresent')
+
+        self.assertEqual(int(DEVICE_STATE_ACTIVE|DEVICE_STATE_DISABLED|DEVICE_STATE_NOTPRESENT|DEVICE_STATE_UNPLUGGED), int(DEVICE_STATEMASK_ALL))
+        self.assertEqual(DEVICE_STATE_ACTIVE|DEVICE_STATE_DISABLED|DEVICE_STATE_NOTPRESENT|DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL)
 
         self.assertEqual(int(STGM_READ), 0x00000000)
-        self.assertEqual(str(STGM_READ), b'STGM_READ')
+        self.assertEqual(str(STGM_READ), b'Read')
         self.assertEqual(int(STGM_WRITE), 0x00000001)
-        self.assertEqual(str(STGM_WRITE), b'STGM_WRITE')
+        self.assertEqual(str(STGM_WRITE), b'Write')
         self.assertEqual(int(STGM_READWRITE), 0x00000002)
-        self.assertEqual(str(STGM_READWRITE), b'STGM_READWRITE')
+        self.assertEqual(str(STGM_READWRITE), b'Readwrite')
 
         self.assertEqual(type(Device_FriendlyName), PROPERTYKEY)
         self.assertEqual(type(Device_DeviceDesc), PROPERTYKEY)
         self.assertEqual(type(DeviceInterface_FriendlyName), PROPERTYKEY)
+
+        self.assertEqual(int(ENDPOINT_HARDWARE_SUPPORT_VOLUME), 0x00000001)
+        self.assertEqual(str(ENDPOINT_HARDWARE_SUPPORT_VOLUME), b'Volume')
+        self.assertEqual(int(ENDPOINT_HARDWARE_SUPPORT_MUTE), 0x00000002)
+        self.assertEqual(str(ENDPOINT_HARDWARE_SUPPORT_MUTE), b'Mute')
+        self.assertEqual(int(ENDPOINT_HARDWARE_SUPPORT_METER), 0x00000004)
+        self.assertEqual(str(ENDPOINT_HARDWARE_SUPPORT_METER), b'Meter')
 
 
 class TestAudioEndpoints(unittest.TestCase):

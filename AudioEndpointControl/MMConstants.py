@@ -48,15 +48,26 @@ class _ValueTypeClass(object):  # pylint: disable=too-few-public-methods
     def __int__(self):
         return self._value
 
-    def __or__(self, other):
-        return self.__class__(int(self) | int(other))
-
     def __eq__(self, other):
         return self._value == other._value
 
 
-def _CreateValueType(Name, ValueMap):
-    ValueType = type(str(Name), (_ValueTypeClass,), {'_valueMap': ValueMap})
+class _BitFlagTypeClass(_ValueTypeClass):
+    def __str__(self):
+        return ", ".join([self._valueMap[Bit]
+                          for Bit in self._valueMap if self._value & Bit])
+
+    def __or__(self, other):
+        return self.__class__(int(self) | int(other))
+
+    def __iter__(self):
+        for Bit in self._valueMap:
+            if self._value & Bit:
+                yield self.__class__(Bit)
+
+
+def _CreateValueType(Name, ValueMap, Class=_ValueTypeClass):
+    ValueType = type(str(Name), (Class,), {'_valueMap': ValueMap})
 
     return ValueType
 
@@ -97,12 +108,11 @@ Communications = RoleType(eCommunications)
 Device_StateType = _CreateValueType(
     'Device_StateType',
     {
-        0x00000001: 'DEVICE_STATE_ACTIVE',
-        0x00000002: 'DEVICE_STATE_DISABLED',
-        0x00000004: 'DEVICE_STATE_NOTPRESENT',
-        0x00000008: 'DEVICE_STATE_UNPLUGGED',
-        0x0000000F: 'DEVICE_STATEMASK_ALL'
-    }
+        0x00000001: 'Active',
+        0x00000002: 'Disabled',
+        0x00000004: 'Notpresent',
+        0x00000008: 'Unplugged',
+    }, _BitFlagTypeClass
 )
 
 DEVICE_STATE_ACTIVE = Device_StateType(0x00000001)
@@ -122,9 +132,9 @@ DEVICE_STATEMASK_ALL = Device_StateType(0x0000000F)
 STGMType = _CreateValueType(
     'STGMType',
     {
-        0x00000000: 'STGM_READ',
-        0x00000001: 'STGM_WRITE',
-        0x00000002: 'STGM_READWRITE',
+        0x00000000: 'Read',
+        0x00000001: 'Write',
+        0x00000002: 'Readwrite',
     }
 )
 
@@ -161,10 +171,18 @@ DeviceInterface_FriendlyName = PROPERTYKEY(
 # that corresponds to a particular ENDPOINT_HARDWARE_SUPPORT_XXX constant is
 # set in the mask, then the meaning is that the function represented by that
 # constant is implemented in hardware by the device.
+ENDPOINT_HARDWARE_SUPPORTType = _CreateValueType(
+    'ENDPOINT_HARDWARE_SUPPORTType',
+    {
+        0x00000001: 'Volume',
+        0x00000002: 'Mute',
+        0x00000004: 'Meter',
+    }, _BitFlagTypeClass
+)
 
 # The audio endpoint device supports a hardware volume control.
-ENDPOINT_HARDWARE_SUPPORT_VOLUME = 0x00000001
+ENDPOINT_HARDWARE_SUPPORT_VOLUME = ENDPOINT_HARDWARE_SUPPORTType(0x00000001)
 # The audio endpoint device supports a hardware mute control.
-ENDPOINT_HARDWARE_SUPPORT_MUTE = 0x00000002
+ENDPOINT_HARDWARE_SUPPORT_MUTE = ENDPOINT_HARDWARE_SUPPORTType(0x00000002)
 # The audio endpoint device supports a hardware peak meter.
-ENDPOINT_HARDWARE_SUPPORT_METER = 0x00000004
+ENDPOINT_HARDWARE_SUPPORT_METER = ENDPOINT_HARDWARE_SUPPORTType(0x00000004)
