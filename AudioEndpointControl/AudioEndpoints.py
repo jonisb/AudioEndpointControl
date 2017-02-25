@@ -10,7 +10,6 @@ from win32api import FormatMessage  # pylint: disable=no-name-in-module
 
 from comtypes import CoCreateInstance, CLSCTX_INPROC_SERVER, CLSCTX_ALL, GUID
 
-# pylint: disable=no-name-in-module
 from .MMConstants import (Render, Console, DEVICE_STATE_ACTIVE,
                           Device_FriendlyName, STGM_READ)
 try:
@@ -225,10 +224,8 @@ class AudioEndpoint(object):
         self.PKEY_Device = PKEY_Device
         self.EventContext = EventContext
         self._AudioVolume = AudioVolume(self, self.EventContext)
-        self.RegisterCallback = self._AudioVolume.\
-            RegisterCallback
-        self.UnregisterCallback = self._AudioVolume.\
-            UnregisterCallback
+        self.RegisterCallback = self._AudioVolume.RegisterCallback
+        self.UnregisterCallback = self._AudioVolume.UnregisterCallback
 
     @property
     def volume(self):  # TODO: Missing method docstring (missing-docstring)

@@ -15,7 +15,7 @@ from .EndpointvolumeAPI import IAudioEndpointVolumeCallback
 
 
 class cNotify(object):  # TODO: Missing class docstring (missing-docstring)
-    # FIX: Too few public methods (0/2) (too-few-public-methods)
+    # pylint: disable=too-few-public-methods
     def __init__(self, pNotify):
         self.EventContext = pNotify.contents.guidEventContext
         self.Muted = bool(pNotify.contents.bMuted)
@@ -45,14 +45,16 @@ class CAudioEndpointVolumeCallback(CallbackBaseClass):
         CallbackBaseClass.__init__(self, Callback)
         self._endpoint = endpoint
 
-    def OnNotify(self, this, pNotify):  # TODO: Missing method docstring
+    def OnNotify(self, this, pNotify):  # pylint: disable=unused-argument
+        # TODO: Missing method docstring
         try:
             self._Callback.OnNotify(cNotify(pNotify), self._endpoint)
         except AttributeError:  # TODO: Log warning "OnNotify" method missing
             pass
 
 
-class CMMNotificationClient(CallbackBaseClass):  # TODO: Missing class docstring
+# TODO: Missing class docstring
+class CMMNotificationClient(CallbackBaseClass):
     _com_interfaces_ = [IMMNotificationClient]
 
     def __init__(self, Callback, endpoints):
@@ -60,6 +62,7 @@ class CMMNotificationClient(CallbackBaseClass):  # TODO: Missing class docstring
         self._AudioDevices = endpoints
 
     def OnDeviceStateChanged(self, this, pwstrDeviceId, dwNewState):
+        # pylint: disable=unused-argument
         # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnDeviceStateChanged(
@@ -72,6 +75,7 @@ class CMMNotificationClient(CallbackBaseClass):  # TODO: Missing class docstring
             traceback.print_exc(file=sys.stdout)
 
     def OnDeviceRemoved(self, this, pwstrDeviceId):
+        # pylint: disable=unused-argument
         # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnDeviceRemoved(self._AudioDevices(pwstrDeviceId))
@@ -81,6 +85,7 @@ class CMMNotificationClient(CallbackBaseClass):  # TODO: Missing class docstring
             traceback.print_exc(file=sys.stdout)
 
     def OnDeviceAdded(self, this, pwstrDeviceId):
+        # pylint: disable=unused-argument
         # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnDeviceAdded(self._AudioDevices(pwstrDeviceId))
@@ -90,6 +95,7 @@ class CMMNotificationClient(CallbackBaseClass):  # TODO: Missing class docstring
             traceback.print_exc(file=sys.stdout)
 
     def OnDefaultDeviceChanged(self, this, flow, role, pwstrDeviceId):
+        # pylint: disable=unused-argument
         # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnDefaultDeviceChanged(
@@ -103,6 +109,7 @@ class CMMNotificationClient(CallbackBaseClass):  # TODO: Missing class docstring
             traceback.print_exc(file=sys.stdout)
 
     def OnPropertyValueChanged(self, this, pwstrDeviceId, key):
+        # pylint: disable=unused-argument
         # TODO: Missing method docstring (missing-docstring)
         try:
             self._Callback.OnPropertyValueChanged(

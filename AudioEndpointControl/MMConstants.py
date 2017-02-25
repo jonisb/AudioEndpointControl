@@ -23,7 +23,7 @@ try:
         eCommunications,
     )
 except ImportError:
-    from comtypes.client import GetModule
+    from comtypes.client import GetModule  # pylint: disable=ungrouped-imports
     GetModule("mmdeviceapi.tlb")
     from comtypes.gen.MMDeviceAPILib import (
         _tagpropertykey,
@@ -38,12 +38,12 @@ except ImportError:
 PROPERTYKEY = _tagpropertykey
 
 
-class _ValueTypeClass(object):
+class _ValueTypeClass(object):  # pylint: disable=too-few-public-methods
     def __init__(self, value):
         self._value = value
 
     def __str__(self):
-        return self._valueMap[self._value]
+        return self._valueMap[self._value]  # pylint: disable=no-member
 
     def __int__(self):
         return self._value
